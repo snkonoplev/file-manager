@@ -1,0 +1,6 @@
+CREATE TABLE "users" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "created" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "password" TEXT NOT NULL
+)
