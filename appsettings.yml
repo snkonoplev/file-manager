@@ -1,2 +1,1 @@
-DB:
-  URL: "sqlite3://data"
+ADMIN_PASSWORD: "123"
