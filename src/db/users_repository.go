@@ -7,22 +7,22 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/snkonoplev/file-manager/comand"
+	"github.com/snkonoplev/file-manager/command"
 	"github.com/snkonoplev/file-manager/entity"
 	"github.com/snkonoplev/file-manager/security"
 )
 
-type Repository struct {
+type UsersRepository struct {
 	db *sqlx.DB
 }
 
-func NewRepository(db *sqlx.DB) *Repository {
-	return &Repository{
+func NewUsersRepository(db *sqlx.DB) *UsersRepository {
+	return &UsersRepository{
 		db: db,
 	}
 }
 
-func (r *Repository) CreateUser(context context.Context, user comand.CreateUserCommand) (int64, error) {
+func (r *UsersRepository) CreateUser(context context.Context, user command.CreateUserCommand) (int64, error) {
 	passwordHash, err := security.HashPassword(user.Password)
 	if err != nil {
 		return 0, fmt.Errorf("can't calculate password hash %s", err)
@@ -42,7 +42,7 @@ func (r *Repository) CreateUser(context context.Context, user comand.CreateUserC
 	return id, nil
 }
 
-func (r *Repository) CheckUserExists(context context.Context, userName string) (bool, error) {
+func (r *UsersRepository) CheckUserExists(context context.Context, userName string) (bool, error) {
 	sql := "SELECT COUNT(*) as count FROM users WHERE name=$1"
 	count := 0
 	err := r.db.GetContext(context, &count, sql, userName)
@@ -57,7 +57,7 @@ func (r *Repository) CheckUserExists(context context.Context, userName string) (
 	return false, nil
 }
 
-func (r *Repository) ListUsers(context context.Context) ([]entity.User, error) {
+func (r *UsersRepository) ListUsers(context context.Context) ([]entity.User, error) {
 	sql := "SELECT id, created, last_login, name, is_admin FROM users"
 	users := []entity.User{}
 	err := r.db.SelectContext(context, &users, sql)

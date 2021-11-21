@@ -1,4 +1,4 @@
-package comand
+package command
 
 type CreateUserCommand struct {
 	Name     string

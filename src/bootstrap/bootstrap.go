@@ -2,26 +2,29 @@ package bootstrap
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
-	"github.com/snkonoplev/file-manager/comand"
+	"github.com/snkonoplev/file-manager/command"
 	"github.com/snkonoplev/file-manager/db"
+	"github.com/snkonoplev/file-manager/mediator"
 	"github.com/spf13/viper"
 )
 
 type Bootstrap struct {
-	config     *viper.Viper
-	database   *sqlx.DB
-	repository *db.Repository
+	config   *viper.Viper
+	database *sqlx.DB
+	mediator *mediator.Mediator
 }
 
-func NewBootstrap(config *viper.Viper, database *sqlx.DB, repository *db.Repository) *Bootstrap {
+func NewBootstrap(config *viper.Viper, database *sqlx.DB, mediator *mediator.Mediator) *Bootstrap {
 	return &Bootstrap{
-		config:     config,
-		database:   database,
-		repository: repository,
+		config:   config,
+		database: database,
+		mediator: mediator,
 	}
 }
 
@@ -57,19 +60,21 @@ func (b *Bootstrap) runMigrations() error {
 }
 
 func (b *Bootstrap) createAdminUser() (bool, error) {
-	exists, err := b.repository.CheckUserExists(context.Background(), "admin")
+	_, err := b.mediator.Handle(context.Background(), command.CreateUserCommand{
+
+		Name:     "admin",
+		Password: b.config.GetString("ADMIN_PASSWORD"),
+		IsAdmin:  true,
+	})
 	if err != nil {
-		return false, fmt.Errorf("can't check if user exists %s", err)
+
+		target := &mediator.HandlerError{}
+		if errors.As(err, &target) && target.StatusCode == http.StatusBadRequest {
+			return false, nil
+		}
+
+		return false, err
 	}
 
-	if exists {
-		return false, nil
-	}
-
-	password := b.config.GetString("ADMIN_PASSWORD")
-	_, err = b.repository.CreateUser(context.Background(), comand.CreateUserCommand{Name: "admin", Password: password, IsAdmin: true})
-	if err != nil {
-		return false, fmt.Errorf("can't create admin user %s", err)
-	}
 	return true, nil
 }
