@@ -3,14 +3,17 @@ package configuration
 import (
 	"reflect"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/snkonoplev/file-manager/bootstrap"
 	"github.com/snkonoplev/file-manager/command"
 	"github.com/snkonoplev/file-manager/commandhandler"
 	"github.com/snkonoplev/file-manager/db"
+	"github.com/snkonoplev/file-manager/httphandler"
 	"github.com/snkonoplev/file-manager/mediator"
 	"github.com/snkonoplev/file-manager/query"
 	"github.com/snkonoplev/file-manager/queryhandler"
+	"github.com/snkonoplev/file-manager/router"
 	"github.com/spf13/viper"
 	"go.uber.org/dig"
 )
@@ -24,10 +27,25 @@ func BuildContainer() *dig.Container {
 	})
 	container.Provide(db.NewUsersRepository)
 	container.Provide(bootstrap.NewBootstrap)
-	registerHandlers(container)
 	container.Provide(mediator.NewMediator)
 
+	container.Provide(router.NewRouter)
+	container.Provide(func() *gin.Engine {
+		r := gin.New()
+		r.Use(
+			gin.Recovery(),
+		)
+		return r
+	})
+
+	registerHandlers(container)
+	registerHttpHandlers(container)
+
 	return container
+}
+
+func registerHttpHandlers(container *dig.Container) {
+	container.Provide(httphandler.NewUsersHandler)
 }
 
 func registerHandlers(container *dig.Container) {

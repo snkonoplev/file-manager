@@ -11,6 +11,7 @@ import (
 	"github.com/snkonoplev/file-manager/command"
 	"github.com/snkonoplev/file-manager/db"
 	"github.com/snkonoplev/file-manager/mediator"
+	"github.com/snkonoplev/file-manager/router"
 	"github.com/spf13/viper"
 )
 
@@ -18,13 +19,15 @@ type Bootstrap struct {
 	config   *viper.Viper
 	database *sqlx.DB
 	mediator *mediator.Mediator
+	router   *router.Router
 }
 
-func NewBootstrap(config *viper.Viper, database *sqlx.DB, mediator *mediator.Mediator) *Bootstrap {
+func NewBootstrap(config *viper.Viper, database *sqlx.DB, mediator *mediator.Mediator, router *router.Router) *Bootstrap {
 	return &Bootstrap{
 		config:   config,
 		database: database,
 		mediator: mediator,
+		router:   router,
 	}
 }
 
@@ -46,6 +49,8 @@ func (b *Bootstrap) Run() error {
 	} else {
 		logrus.Info("admin user already exists")
 	}
+
+	b.router.MapHandlers()
 
 	return nil
 }
