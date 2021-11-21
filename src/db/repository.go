@@ -3,12 +3,13 @@ package db
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 
 	"github.com/snkonoplev/file-manager/comand"
+	"github.com/snkonoplev/file-manager/entity"
+	"github.com/snkonoplev/file-manager/security"
 )
 
 type Repository struct {
@@ -22,10 +23,13 @@ func NewRepository(db *sqlx.DB) *Repository {
 }
 
 func (r *Repository) CreateUser(context context.Context, user comand.CreateUserCommand) (int64, error) {
-	sql := "INSERT INTO users (created, name, password, is_admin) VALUES ($1,$2,$3,$4)"
-	timestamp := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
+	passwordHash, err := security.HashPassword(user.Password)
+	if err != nil {
+		return 0, fmt.Errorf("can't calculate password hash %s", err)
+	}
 
-	result, err := r.db.ExecContext(context, sql, timestamp, user.Name, user.Password, user.IsAdmin)
+	sql := "INSERT INTO users (created, name, password, is_admin) VALUES ($1,$2,$3,$4)"
+	result, err := r.db.ExecContext(context, sql, time.Now().UTC().Unix(), user.Name, passwordHash, user.IsAdmin)
 	if err != nil {
 		return 0, fmt.Errorf("can't insert new user %s", err)
 	}
@@ -51,4 +55,15 @@ func (r *Repository) CheckUserExists(context context.Context, userName string) (
 	}
 
 	return false, nil
+}
+
+func (r *Repository) ListUsers(context context.Context) ([]entity.User, error) {
+	sql := "SELECT id, created, last_login, name, is_admin FROM users"
+	users := []entity.User{}
+	err := r.db.SelectContext(context, &users, sql)
+	if err != nil {
+		return nil, fmt.Errorf("can't get users list %s", err)
+	}
+
+	return users, nil
 }
