@@ -1,15 +1,17 @@
 package db
 
 import (
+	"fmt"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func NewDbConnection() *sqlx.DB {
-	db, err := sqlx.Connect("sqlite3", "manager.db")
+func NewDbConnection(filepath string) (*sqlx.DB, error) {
+	db, err := sqlx.Connect("sqlite3", filepath)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("can't create db connection %s", err)
 	}
 
-	return db
+	return db, nil
 }

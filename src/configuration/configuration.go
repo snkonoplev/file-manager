@@ -1,13 +1,13 @@
 package configuration
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
-func NewConfiguration(logger *logrus.Logger) *viper.Viper {
+func NewConfiguration() (*viper.Viper, error) {
 	v := viper.NewWithOptions(viper.KeyDelimiter("_"))
 	v.SetConfigName("appsettings")
 	v.SetConfigType("yml")
@@ -20,10 +20,10 @@ func NewConfiguration(logger *logrus.Logger) *viper.Viper {
 	err := v.ReadInConfig()
 
 	if err != nil {
-		logger.Fatal(err)
+		return nil, fmt.Errorf("can't read config file %s", err)
 	}
 
 	v.AutomaticEnv()
 
-	return v
+	return v, nil
 }

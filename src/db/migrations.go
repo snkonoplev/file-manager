@@ -9,7 +9,7 @@ import (
 	"github.com/golang-migrate/migrate/source/file"
 )
 
-func RunMigrateScripts(db *sql.DB) error {
+func RunMigrateScripts(db *sql.DB, filepath string) error {
 	driver, err := sqlite3.WithInstance(db, &sqlite3.Config{})
 	if err != nil {
 		return fmt.Errorf("creating sqlite3 db driver failed %s", err)
@@ -17,10 +17,10 @@ func RunMigrateScripts(db *sql.DB) error {
 
 	fsrc, err := (&file.File{}).Open("file://migrations")
 	if err != nil {
-		return err
+		return fmt.Errorf("can't get migration files %s", err)
 	}
 
-	m, err := migrate.NewWithInstance("file", fsrc, "manager.db", driver)
+	m, err := migrate.NewWithInstance("file", fsrc, filepath, driver)
 	if err != nil {
 		return fmt.Errorf("initializing db migration failed %s", err)
 	}
