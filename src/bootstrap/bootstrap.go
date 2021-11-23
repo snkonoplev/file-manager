@@ -50,7 +50,10 @@ func (b *Bootstrap) Run() error {
 		logrus.Info("admin user already exists")
 	}
 
-	b.router.MapHandlers()
+	err = b.router.MapHandlers()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -17,9 +17,20 @@ func NewRouter(engine *gin.Engine, usersHandler *httphandler.UsersHandler) *Rout
 	}
 }
 
-func (r *Router) MapHandlers() {
-	users := r.engine.Group("/users")
+func (r *Router) MapHandlers() error {
+
+	auth, err := GetAuth()
+	if err != nil {
+		return err
+	}
+
+	users := r.engine.Group("/users").Use(auth.MiddlewareFunc())
 	{
 		users.GET("", r.usersHandler.GetUsers)
 	}
+
+	r.engine.POST("/login", auth.LoginHandler)
+	r.engine.GET("/refresh_token", auth.RefreshHandler)
+
+	return nil
 }
