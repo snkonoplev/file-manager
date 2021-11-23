@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	"github.com/snkonoplev/file-manager/auth"
 	"github.com/snkonoplev/file-manager/bootstrap"
 	"github.com/snkonoplev/file-manager/command"
 	"github.com/snkonoplev/file-manager/commandhandler"
@@ -28,6 +29,7 @@ func BuildContainer() *dig.Container {
 	container.Provide(db.NewUsersRepository)
 	container.Provide(bootstrap.NewBootstrap)
 	container.Provide(mediator.NewMediator)
+	container.Provide(auth.NewAuth)
 
 	container.Provide(router.NewRouter)
 	container.Provide(func() *gin.Engine {
@@ -52,6 +54,7 @@ func registerHandlers(container *dig.Container) {
 
 	container.Provide(queryhandler.NewUsersHandler)
 	container.Provide(commandhandler.NewCreateUserHandler)
+	container.Provide(queryhandler.NewAuthorizeHandler)
 
 	container.Provide(func(usersHandler *queryhandler.UsersHandler) map[reflect.Type]mediator.Handler {
 		return make(map[reflect.Type]mediator.Handler)
@@ -62,5 +65,8 @@ func registerHandlers(container *dig.Container) {
 	})
 	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *commandhandler.CreateUserHandler) {
 		handlers[reflect.TypeOf(command.CreateUserCommand{})] = handler
+	})
+	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *queryhandler.AuthorizeHandler) {
+		handlers[reflect.TypeOf(query.UserAuthorizeQuery{})] = handler
 	})
 }

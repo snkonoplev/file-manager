@@ -1,3 +1,5 @@
 ADMIN_PASSWORD: "123"
 DB:
   FILE_PATH: "./manager.db"
+JWT:
+  SECRET: "test"

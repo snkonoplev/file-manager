@@ -2,24 +2,27 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/snkonoplev/file-manager/auth"
 	"github.com/snkonoplev/file-manager/httphandler"
 )
 
 type Router struct {
 	engine       *gin.Engine
 	usersHandler *httphandler.UsersHandler
+	a            *auth.Auth
 }
 
-func NewRouter(engine *gin.Engine, usersHandler *httphandler.UsersHandler) *Router {
+func NewRouter(engine *gin.Engine, usersHandler *httphandler.UsersHandler, auth *auth.Auth) *Router {
 	return &Router{
 		engine:       engine,
 		usersHandler: usersHandler,
+		a:            auth,
 	}
 }
 
 func (r *Router) MapHandlers() error {
 
-	auth, err := GetAuth()
+	auth, err := r.a.AuthMiddleware()
 	if err != nil {
 		return err
 	}

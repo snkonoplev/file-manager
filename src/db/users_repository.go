@@ -67,3 +67,18 @@ func (r *UsersRepository) ListUsers(context context.Context) ([]entity.User, err
 
 	return users, nil
 }
+
+func (r *UsersRepository) Authorize(context context.Context, userName string, password string) (entity.UserFull, error) {
+	user := entity.UserFull{}
+	sql := "SELECT id, created, last_login, name, is_admin, password FROM users WHERE name=$1"
+	err := r.db.GetContext(context, &user, sql, userName)
+	if err != nil {
+		return user, err
+	}
+
+	if security.CheckPasswordHash(password, user.Password) {
+		return user, nil
+	}
+
+	return user, fmt.Errorf("incorrect password")
+}
