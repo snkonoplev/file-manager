@@ -83,3 +83,41 @@ func (h *UsersController) CreteUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, result)
 }
+
+// @Id UpdateUser
+// @Summary Update user
+// @Accept  json
+// @Produce  json
+// @Security Bearer
+// @Param Body body command.UpdateUserCommand true "User"
+// @Router /users [put]
+// @Success 200 {object} int
+// @Failure 401 {string} string
+// @Failure 403 {string} string
+// @Tags Users
+func (h *UsersController) UpdateUser(c *gin.Context) {
+	var user command.UpdateUserCommand
+	if err := c.ShouldBind(&user); err != nil {
+		c.String(http.StatusBadRequest, "can't bind user model")
+	}
+
+	claims := jwt.ExtractClaims(c)
+
+	if c, ok := claims[auth.IsAdminKey]; ok {
+		if k, ok := c.(bool); ok {
+			user.IsCallerAdmin = k
+		}
+	}
+
+	result, err := h.mediator.Handle(c.Request.Context(), user)
+	if err != nil {
+		target := &mediator.HandlerError{}
+		if errors.As(err, &target) {
+			c.String(target.StatusCode, target.Message)
+			return
+		}
+
+		c.Status(http.StatusInternalServerError)
+	}
+	c.JSON(http.StatusOK, result)
+}

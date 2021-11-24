@@ -34,6 +34,7 @@ func (r *Router) MapHandlers() error {
 	{
 		users.GET("", r.usersController.GetUsers)
 		users.POST("", r.usersController.CreteUser)
+		users.PUT("", r.usersController.UpdateUser)
 	}
 
 	return nil

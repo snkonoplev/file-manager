@@ -11,6 +11,15 @@ definitions:
         example: "123"
         type: string
     type: object
+  command.UpdateUserCommand:
+    properties:
+      id:
+        example: 1
+        type: integer
+      isAdmin:
+        example: true
+        type: boolean
+    type: object
   entity.User:
     properties:
       created:
@@ -143,6 +152,37 @@ paths:
       security:
       - Bearer: []
       summary: Crete new user
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      operationId: UpdateUser
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/command.UpdateUserCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Update user
       tags:
       - Users
 securityDefinitions:

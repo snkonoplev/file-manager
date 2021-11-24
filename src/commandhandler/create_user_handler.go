@@ -2,7 +2,6 @@ package commandhandler
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -52,7 +51,11 @@ func (h *CreateUserHandler) Handle(context context.Context, c interface{}) (inte
 
 		passwordHash, err := security.HashPassword(createUserCommand.Password)
 		if err != nil {
-			return 0, fmt.Errorf("can't calculate password hash %s", err)
+			return nil, &mediator.HandlerError{
+				StatusCode: http.StatusInternalServerError,
+				Message:    err.Error(),
+				Err:        err,
+			}
 		}
 
 		user := entity.User{
