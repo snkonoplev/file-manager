@@ -9,8 +9,8 @@ import (
 	"github.com/snkonoplev/file-manager/bootstrap"
 	"github.com/snkonoplev/file-manager/command"
 	"github.com/snkonoplev/file-manager/commandhandler"
+	"github.com/snkonoplev/file-manager/controller"
 	"github.com/snkonoplev/file-manager/db"
-	"github.com/snkonoplev/file-manager/httphandler"
 	"github.com/snkonoplev/file-manager/mediator"
 	"github.com/snkonoplev/file-manager/query"
 	"github.com/snkonoplev/file-manager/queryhandler"
@@ -30,6 +30,7 @@ func BuildContainer() *dig.Container {
 	container.Provide(bootstrap.NewBootstrap)
 	container.Provide(mediator.NewMediator)
 	container.Provide(auth.NewAuth)
+	container.Provide(bootstrap.NewSwagger)
 
 	container.Provide(router.NewRouter)
 	container.Provide(func() *gin.Engine {
@@ -47,7 +48,7 @@ func BuildContainer() *dig.Container {
 }
 
 func registerHttpHandlers(container *dig.Container) {
-	container.Provide(httphandler.NewUsersHandler)
+	container.Provide(controller.NewUsersController)
 }
 
 func registerHandlers(container *dig.Container) {

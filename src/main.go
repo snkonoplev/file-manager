@@ -15,6 +15,9 @@ func init() {
 	logrus.SetLevel(logrus.InfoLevel)
 }
 
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
 func main() {
 	logrus.Info("starting application")
 

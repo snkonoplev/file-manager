@@ -1,0 +1,153 @@
+definitions:
+  command.CreateUserCommand:
+    properties:
+      is_admin:
+        example: false
+        type: boolean
+      name:
+        example: adam
+        type: string
+      password:
+        example: "123"
+        type: string
+    type: object
+  entity.User:
+    properties:
+      created:
+        example: 1637768672
+        type: integer
+      id:
+        example: 1
+        type: integer
+      isAdmin:
+        example: true
+        type: boolean
+      lastLogin:
+        example: 1637768672
+        type: integer
+      name:
+        example: Adam
+        type: string
+    type: object
+  query.UserAuthorizeQuery:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+info:
+  contact: {}
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      operationId: Login
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/query.UserAuthorizeQuery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Get access token
+      tags:
+      - Auth
+  /refresh_token:
+    get:
+      consumes:
+      - application/json
+      operationId: RefreshToken
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Refresh access token
+      tags:
+      - Auth
+  /users:
+    get:
+      consumes:
+      - application/json
+      operationId: GetUsers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get list of all users
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      operationId: CreteUser
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/command.CreateUserCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Crete new user
+      tags:
+      - Users
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

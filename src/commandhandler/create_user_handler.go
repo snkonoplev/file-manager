@@ -2,11 +2,15 @@ package commandhandler
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/snkonoplev/file-manager/command"
 	"github.com/snkonoplev/file-manager/db"
+	"github.com/snkonoplev/file-manager/entity"
 	"github.com/snkonoplev/file-manager/mediator"
+	"github.com/snkonoplev/file-manager/security"
 )
 
 type CreateUserHandler struct {
@@ -21,6 +25,14 @@ func NewCreateUserHandler(repository *db.UsersRepository) *CreateUserHandler {
 
 func (h *CreateUserHandler) Handle(context context.Context, c interface{}) (interface{}, error) {
 	if createUserCommand, ok := c.(command.CreateUserCommand); ok {
+
+		if !createUserCommand.IsCallerAdmin {
+			return nil, &mediator.HandlerError{
+				StatusCode: http.StatusForbidden,
+				Message:    "you need admin rights to perform this operation",
+			}
+		}
+
 		exists, err := h.repository.CheckUserExists(context, createUserCommand.Name)
 		if err != nil {
 			return nil, &mediator.HandlerError{
@@ -38,7 +50,19 @@ func (h *CreateUserHandler) Handle(context context.Context, c interface{}) (inte
 			}
 		}
 
-		userId, err := h.repository.CreateUser(context, createUserCommand)
+		passwordHash, err := security.HashPassword(createUserCommand.Password)
+		if err != nil {
+			return 0, fmt.Errorf("can't calculate password hash %s", err)
+		}
+
+		user := entity.User{
+			Created:  time.Now().UTC().Unix(),
+			Name:     createUserCommand.Name,
+			Password: passwordHash,
+			IsAdmin:  createUserCommand.IsAdmin,
+		}
+
+		userId, err := h.repository.CreateUser(context, user)
 		if err != nil {
 			return nil, &mediator.HandlerError{
 				StatusCode: http.StatusInternalServerError,

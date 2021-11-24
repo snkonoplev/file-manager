@@ -13,6 +13,7 @@ import (
 
 type Claim struct {
 	UserName string
+	IsAdmin  bool
 }
 
 type Auth struct {
@@ -27,19 +28,31 @@ func NewAuth(viper *viper.Viper, mediator *mediator.Mediator) *Auth {
 	}
 }
 
-var identityKey string = "user_name"
+var Claims string = "claims"
+var IdentityKey string = "user_name"
+var IsAdminKey string = "is_admin"
 
+// @Id Login
+// @Summary Get access token
+// @Accept  json
+// @Produce  json
+// @Param Body body query.UserAuthorizeQuery true "User"
+// @Router /login [post]
+// @Success 200 {object} map[string]string
+// @Failure 401 {string} string
+// @Tags Auth
 func (a *Auth) AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 	return jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "file-manager",
 		Key:         []byte(a.secret),
 		Timeout:     time.Hour,
 		MaxRefresh:  time.Hour,
-		IdentityKey: identityKey,
+		IdentityKey: Claims,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(entity.UserFull); ok {
+			if v, ok := data.(entity.User); ok {
 				return jwt.MapClaims{
-					identityKey: v.Name,
+					IdentityKey: v.Name,
+					IsAdminKey:  v.IsAdmin,
 				}
 			}
 			return jwt.MapClaims{}
@@ -47,13 +60,14 @@ func (a *Auth) AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			return &Claim{
-				UserName: claims[identityKey].(string),
+				UserName: claims[IdentityKey].(string),
+				IsAdmin:  claims[IsAdminKey].(bool),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			var query query.UserAuthorizeQuery
 			if err := c.ShouldBind(&query); err != nil {
-				return "", jwt.ErrMissingLoginValues
+				return nil, jwt.ErrMissingLoginValues
 			}
 
 			user, err := a.m.Handle(c.Request.Context(), query)
@@ -64,14 +78,14 @@ func (a *Auth) AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 			return user, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if v, ok := data.(*Claim); ok && v.UserName == "admin" {
+			if _, ok := data.(*Claim); ok {
 				return true
 			}
 
 			return false
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
-			c.Status(code)
+			c.String(code, "Unauthorized")
 		},
 		TokenLookup:   "header: Authorization, cookie: jwt",
 		TokenHeadName: "Bearer",

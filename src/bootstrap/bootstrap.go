@@ -20,14 +20,16 @@ type Bootstrap struct {
 	database *sqlx.DB
 	mediator *mediator.Mediator
 	router   *router.Router
+	swagger  *Swagger
 }
 
-func NewBootstrap(config *viper.Viper, database *sqlx.DB, mediator *mediator.Mediator, router *router.Router) *Bootstrap {
+func NewBootstrap(config *viper.Viper, database *sqlx.DB, mediator *mediator.Mediator, router *router.Router, swagger *Swagger) *Bootstrap {
 	return &Bootstrap{
 		config:   config,
 		database: database,
 		mediator: mediator,
 		router:   router,
+		swagger:  swagger,
 	}
 }
 
@@ -55,6 +57,10 @@ func (b *Bootstrap) Run() error {
 		return err
 	}
 
+	if b.config.GetBool("SWAGGER_ENABLED") {
+		b.swagger.EnableSwagger()
+	}
+
 	return nil
 }
 
@@ -67,12 +73,21 @@ func (b *Bootstrap) runMigrations() error {
 	return nil
 }
 
+// @Id RefreshToken
+// @Summary Refresh access token
+// @Accept  json
+// @Produce  json
+// @Security Bearer
+// @Router /refresh_token [get]
+// @Success 200 {object} map[string]string
+// @Failure 401 {string} string
+// @Tags Auth
 func (b *Bootstrap) createAdminUser() (bool, error) {
 	_, err := b.mediator.Handle(context.Background(), command.CreateUserCommand{
-
-		Name:     "admin",
-		Password: b.config.GetString("ADMIN_PASSWORD"),
-		IsAdmin:  true,
+		Name:          "admin",
+		Password:      b.config.GetString("ADMIN_PASSWORD"),
+		IsAdmin:       true,
+		IsCallerAdmin: true,
 	})
 	if err != nil {
 

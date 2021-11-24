@@ -3,3 +3,8 @@ DB:
   FILE_PATH: "./manager.db"
 JWT:
   SECRET: "test"
+SWAGGER:
+  ENABLED: true
+  SCHEMA: "http"
+  HOST: "localhost:8080"
+  BASE_PATH: ""

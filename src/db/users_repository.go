@@ -3,11 +3,9 @@ package db
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/snkonoplev/file-manager/command"
 	"github.com/snkonoplev/file-manager/entity"
 	"github.com/snkonoplev/file-manager/security"
 )
@@ -22,14 +20,11 @@ func NewUsersRepository(db *sqlx.DB) *UsersRepository {
 	}
 }
 
-func (r *UsersRepository) CreateUser(context context.Context, user command.CreateUserCommand) (int64, error) {
-	passwordHash, err := security.HashPassword(user.Password)
-	if err != nil {
-		return 0, fmt.Errorf("can't calculate password hash %s", err)
-	}
+func (r *UsersRepository) CreateUser(context context.Context, user entity.User) (int64, error) {
 
-	sql := "INSERT INTO users (created, name, password, is_admin) VALUES ($1,$2,$3,$4)"
-	result, err := r.db.ExecContext(context, sql, time.Now().UTC().Unix(), user.Name, passwordHash, user.IsAdmin)
+	sql := "INSERT INTO users (created, name, password, is_admin) VALUES (:created,:name,:password,:is_admin)"
+
+	result, err := r.db.NamedExecContext(context, sql, user)
 	if err != nil {
 		return 0, fmt.Errorf("can't insert new user %s", err)
 	}
@@ -58,7 +53,7 @@ func (r *UsersRepository) CheckUserExists(context context.Context, userName stri
 }
 
 func (r *UsersRepository) ListUsers(context context.Context) ([]entity.User, error) {
-	sql := "SELECT id, created, last_login, name, is_admin FROM users"
+	sql := "SELECT id, created, last_login, name, is_admin, password FROM users"
 	users := []entity.User{}
 	err := r.db.SelectContext(context, &users, sql)
 	if err != nil {
@@ -68,8 +63,8 @@ func (r *UsersRepository) ListUsers(context context.Context) ([]entity.User, err
 	return users, nil
 }
 
-func (r *UsersRepository) Authorize(context context.Context, userName string, password string) (entity.UserFull, error) {
-	user := entity.UserFull{}
+func (r *UsersRepository) Authorize(context context.Context, userName string, password string) (entity.User, error) {
+	user := entity.User{}
 	sql := "SELECT id, created, last_login, name, is_admin, password FROM users WHERE name=$1"
 	err := r.db.GetContext(context, &user, sql, userName)
 	if err != nil {
@@ -81,4 +76,42 @@ func (r *UsersRepository) Authorize(context context.Context, userName string, pa
 	}
 
 	return user, fmt.Errorf("incorrect password")
+}
+
+func (r *UsersRepository) UpdateUser(context context.Context, user entity.User) (entity.User, error) {
+	sql := "UPDATE users SET name=:name, password=:password, is_admin=:is_admin WHERE id=:id"
+	result, err := r.db.NamedExecContext(context, sql, user)
+	if err != nil {
+		return user, fmt.Errorf("can't update user %s", err)
+	}
+
+	count, err := result.RowsAffected()
+	if err != nil {
+		return user, fmt.Errorf("can't get affected rows %s", err)
+	}
+
+	if count == 1 {
+		return user, nil
+	}
+
+	return user, fmt.Errorf("can't find user with id %d", user.Id)
+}
+
+func (r *UsersRepository) DeleteUser(context context.Context, id int64) (int64, error) {
+	sql := "DELETE FROM users WHERE id=:id"
+	result, err := r.db.NamedExecContext(context, sql, id)
+	if err != nil {
+		return id, fmt.Errorf("can't delete user %s", err)
+	}
+
+	count, err := result.RowsAffected()
+	if err != nil {
+		return id, fmt.Errorf("can't get affected rows %s", err)
+	}
+
+	if count == 1 {
+		return id, nil
+	}
+
+	return id, fmt.Errorf("can't find user with id %d", id)
 }
