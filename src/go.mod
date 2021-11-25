@@ -6,6 +6,7 @@ require (
 	github.com/appleboy/gin-jwt/v2 v2.7.0
 	github.com/gin-gonic/gin v1.7.4
 	github.com/golang-migrate/migrate v3.5.4+incompatible
+	github.com/google/uuid v1.1.2
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/mattn/go-sqlite3 v1.14.9
 	github.com/sirupsen/logrus v1.8.1

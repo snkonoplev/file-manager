@@ -2,9 +2,12 @@ package configuration
 
 import (
 	"reflect"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 	"github.com/snkonoplev/file-manager/auth"
 	"github.com/snkonoplev/file-manager/bootstrap"
 	"github.com/snkonoplev/file-manager/command"
@@ -37,6 +40,7 @@ func BuildContainer() *dig.Container {
 		r := gin.New()
 		r.Use(
 			gin.Recovery(),
+			Logger(),
 		)
 		return r
 	})
@@ -82,4 +86,31 @@ func registerHandlers(container *dig.Container) {
 	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *queryhandler.UserHandler) {
 		handlers[reflect.TypeOf(query.UserQuery{})] = handler
 	})
+}
+
+func Logger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		logger := logrus.StandardLogger()
+		traceId := uuid.New()
+		t := time.Now()
+
+		c.Set("traceId", traceId)
+
+		logger.WithContext(c.Request.Context()).WithFields(logrus.Fields{
+			"ip":        c.ClientIP(),
+			"method":    c.Request.Method,
+			"path":      c.Request.URL.Path,
+			"proto":     c.Request.Proto,
+			"userAgent": c.Request.UserAgent(),
+			"traceId":   traceId,
+		}).Info("Start executing...")
+
+		c.Next()
+
+		logger.WithContext(c.Request.Context()).WithFields(logrus.Fields{
+			"traceId": traceId,
+			"latency": time.Since(t),
+			"status":  c.Writer.Status(),
+		}).Info("Stop executing...")
+	}
 }

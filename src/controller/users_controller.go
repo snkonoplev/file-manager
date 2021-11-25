@@ -34,7 +34,7 @@ func NewUsersController(mediator *mediator.Mediator) *UsersController {
 // @Failure 401 {string} string
 // @Tags Users
 func (h *UsersController) GetUsers(c *gin.Context) {
-	result, err := h.mediator.Handle(c.Request.Context(), query.UsersQuery{})
+	result, err := h.mediator.Handle(c, query.UsersQuery{})
 	if err != nil {
 		target := &mediator.HandlerError{}
 		if errors.As(err, &target) {
@@ -75,7 +75,7 @@ func (h *UsersController) CreteUser(c *gin.Context) {
 		}
 	}
 
-	result, err := h.mediator.Handle(c.Request.Context(), user)
+	result, err := h.mediator.Handle(c, user)
 	if err != nil {
 		target := &mediator.HandlerError{}
 		if errors.As(err, &target) {
@@ -115,7 +115,7 @@ func (h *UsersController) UpdateUser(c *gin.Context) {
 		}
 	}
 
-	result, err := h.mediator.Handle(c.Request.Context(), user)
+	result, err := h.mediator.Handle(c, user)
 	if err != nil {
 		target := &mediator.HandlerError{}
 		if errors.As(err, &target) {
@@ -162,7 +162,7 @@ func (h *UsersController) DeleteUser(c *gin.Context) {
 		}
 	}
 
-	result, err := h.mediator.Handle(c.Request.Context(), user)
+	result, err := h.mediator.Handle(c, user)
 	if err != nil {
 		target := &mediator.HandlerError{}
 		if errors.As(err, &target) {
@@ -199,7 +199,7 @@ func (h *UsersController) GetUser(c *gin.Context) {
 		Id: id,
 	}
 
-	result, err := h.mediator.Handle(c.Request.Context(), q)
+	result, err := h.mediator.Handle(c, q)
 	if err != nil {
 		target := &mediator.HandlerError{}
 		if errors.As(err, &target) {

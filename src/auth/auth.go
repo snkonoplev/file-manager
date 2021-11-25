@@ -70,7 +70,7 @@ func (a *Auth) AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 				return nil, jwt.ErrMissingLoginValues
 			}
 
-			user, err := a.m.Handle(c.Request.Context(), query)
+			user, err := a.m.Handle(c, query)
 			if err != nil {
 				return nil, jwt.ErrFailedAuthentication
 			}

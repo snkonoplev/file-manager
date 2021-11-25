@@ -1,7 +1,6 @@
 package bootstrap
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -83,7 +82,7 @@ func (b *Bootstrap) runMigrations() error {
 // @Failure 401 {string} string
 // @Tags Auth
 func (b *Bootstrap) createAdminUser() (bool, error) {
-	_, err := b.mediator.Handle(context.Background(), command.CreateUserCommand{
+	_, err := b.mediator.Handle(nil, command.CreateUserCommand{
 		Name:          "admin",
 		Password:      b.config.GetString("ADMIN_PASSWORD"),
 		IsAdmin:       true,
