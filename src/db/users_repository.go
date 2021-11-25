@@ -23,7 +23,9 @@ func NewUsersRepository(db *sqlx.DB) *UsersRepository {
 
 func (r *UsersRepository) CreateUser(context context.Context, user entity.User) (int64, error) {
 
-	sql := "INSERT INTO users (created, name, password, is_admin) VALUES (:created,:name,:password,:is_admin)"
+	sql := `INSERT INTO users 
+			(created, name, password, is_admin, is_active) 
+			VALUES (:created,:name,:password,:is_admin,:is_active)`
 
 	result, err := r.db.NamedExecContext(context, sql, user)
 	if err != nil {
@@ -54,7 +56,7 @@ func (r *UsersRepository) CheckUserExists(context context.Context, userName stri
 }
 
 func (r *UsersRepository) ListUsers(context context.Context) ([]entity.User, error) {
-	sql := "SELECT id, created, last_login, name, is_admin, password FROM users"
+	sql := "SELECT id, created, last_login, name, is_admin, is_active, password FROM users"
 	users := []entity.User{}
 	err := r.db.SelectContext(context, &users, sql)
 	if err != nil {
@@ -66,7 +68,7 @@ func (r *UsersRepository) ListUsers(context context.Context) ([]entity.User, err
 
 func (r *UsersRepository) Authorize(context context.Context, userName string, password string) (entity.User, error) {
 	user := entity.User{}
-	sql := "SELECT id, created, last_login, name, is_admin, password FROM users WHERE name=$1"
+	sql := "SELECT id, created, last_login, name, is_admin, is_active, password FROM users WHERE name=$1"
 	err := r.db.GetContext(context, &user, sql, userName)
 	if err != nil {
 		return user, err
@@ -89,7 +91,7 @@ func (r *UsersRepository) Authorize(context context.Context, userName string, pa
 }
 
 func (r *UsersRepository) UpdateUser(context context.Context, user entity.User) (entity.User, error) {
-	sql := "UPDATE users SET name=:name, password=:password, is_admin=:is_admin WHERE id=:id"
+	sql := "UPDATE users SET is_active=:is_active, is_admin=:is_admin WHERE id=:id"
 	result, err := r.db.NamedExecContext(context, sql, user)
 	if err != nil {
 		return user, fmt.Errorf("can't update user %s", err)
@@ -108,8 +110,8 @@ func (r *UsersRepository) UpdateUser(context context.Context, user entity.User) 
 }
 
 func (r *UsersRepository) DeleteUser(context context.Context, id int64) (int64, error) {
-	sql := "DELETE FROM users WHERE id=:id"
-	result, err := r.db.NamedExecContext(context, sql, id)
+	sql := "DELETE FROM users WHERE id=?"
+	result, err := r.db.ExecContext(context, sql, id)
 	if err != nil {
 		return id, fmt.Errorf("can't delete user %s", err)
 	}

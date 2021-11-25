@@ -125,7 +125,10 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.User"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.User"
+                            }
                         }
                     },
                     "401": {
@@ -234,13 +237,70 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/users/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Delete user",
+                "operationId": "DeleteUser",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "command.CreateUserCommand": {
             "type": "object",
+            "required": [
+                "name",
+                "password"
+            ],
             "properties": {
-                "is_admin": {
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "isAdmin": {
                     "type": "boolean",
                     "example": false
                 },
@@ -256,14 +316,21 @@ var doc = `{
         },
         "command.UpdateUserCommand": {
             "type": "object",
+            "required": [
+                "id"
+            ],
             "properties": {
                 "id": {
                     "type": "integer",
                     "example": 1
                 },
+                "isActive": {
+                    "type": "boolean",
+                    "example": false
+                },
                 "isAdmin": {
                     "type": "boolean",
-                    "example": true
+                    "example": false
                 }
             }
         },
@@ -277,6 +344,10 @@ var doc = `{
                 "id": {
                     "type": "integer",
                     "example": 1
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
                 },
                 "isAdmin": {
                     "type": "boolean",
@@ -300,10 +371,12 @@ var doc = `{
             ],
             "properties": {
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "admin"
                 }
             }
         }

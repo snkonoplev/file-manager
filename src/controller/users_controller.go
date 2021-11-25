@@ -2,7 +2,9 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -28,7 +30,7 @@ func NewUsersController(mediator *mediator.Mediator) *UsersController {
 // @Produce  json
 // @Security Bearer
 // @Router /users [get]
-// @Success 200 {object} entity.User
+// @Success 200 {object} []entity.User
 // @Failure 401 {string} string
 // @Tags Users
 func (h *UsersController) GetUsers(c *gin.Context) {
@@ -41,6 +43,7 @@ func (h *UsersController) GetUsers(c *gin.Context) {
 		}
 
 		c.Status(http.StatusInternalServerError)
+		return
 	}
 	c.JSON(http.StatusOK, result)
 }
@@ -61,6 +64,7 @@ func (h *UsersController) CreteUser(c *gin.Context) {
 	var user command.CreateUserCommand
 	if err := c.ShouldBind(&user); err != nil {
 		c.String(http.StatusBadRequest, "can't bind user model")
+		return
 	}
 
 	claims := jwt.ExtractClaims(c)
@@ -80,6 +84,7 @@ func (h *UsersController) CreteUser(c *gin.Context) {
 		}
 
 		c.Status(http.StatusInternalServerError)
+		return
 	}
 	c.JSON(http.StatusOK, result)
 }
@@ -99,6 +104,7 @@ func (h *UsersController) UpdateUser(c *gin.Context) {
 	var user command.UpdateUserCommand
 	if err := c.ShouldBind(&user); err != nil {
 		c.String(http.StatusBadRequest, "can't bind user model")
+		return
 	}
 
 	claims := jwt.ExtractClaims(c)
@@ -118,6 +124,54 @@ func (h *UsersController) UpdateUser(c *gin.Context) {
 		}
 
 		c.Status(http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+// @Id DeleteUser
+// @Summary Delete user
+// @Accept  json
+// @Produce  json
+// @Security Bearer
+// @Param id path int true "User id"
+// @Router /users/{id} [delete]
+// @Success 200 {object} int
+// @Failure 401 {string} string
+// @Failure 403 {string} string
+// @Tags Users
+func (h *UsersController) DeleteUser(c *gin.Context) {
+
+	strId := c.Param("id")
+
+	id, err := strconv.ParseInt(strId, 10, 64)
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("can't convert %s to int", strId))
+		return
+	}
+
+	user := command.DeleteUserCommand{
+		Id: id,
+	}
+
+	claims := jwt.ExtractClaims(c)
+
+	if c, ok := claims[auth.IsAdminKey]; ok {
+		if k, ok := c.(bool); ok {
+			user.IsCallerAdmin = k
+		}
+	}
+
+	result, err := h.mediator.Handle(c.Request.Context(), user)
+	if err != nil {
+		target := &mediator.HandlerError{}
+		if errors.As(err, &target) {
+			c.String(target.StatusCode, target.Message)
+			return
+		}
+
+		c.Status(http.StatusInternalServerError)
+		return
 	}
 	c.JSON(http.StatusOK, result)
 }

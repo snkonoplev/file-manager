@@ -88,6 +88,7 @@ func (b *Bootstrap) createAdminUser() (bool, error) {
 		Password:      b.config.GetString("ADMIN_PASSWORD"),
 		IsAdmin:       true,
 		IsCallerAdmin: true,
+		IsActive:      true,
 	})
 	if err != nil {
 

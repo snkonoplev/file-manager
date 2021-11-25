@@ -6,5 +6,6 @@ type User struct {
 	LastLogin *int64 `db:"last_login" json:"lastLogin" example:"1637768672"`
 	Name      string `db:"name" json:"name" example:"Adam"`
 	IsAdmin   bool   `db:"is_admin" json:"isAdmin" example:"true"`
+	IsActive  bool   `db:"is_active" json:"isActive" example:"true"`
 	Password  string `db:"password" json:"-"`
 }

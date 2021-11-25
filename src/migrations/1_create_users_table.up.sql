@@ -4,5 +4,6 @@ CREATE TABLE "users" (
     "last_login" INTEGER NULL,
     "name" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "is_admin" INTEGER NOT NULL
+    "is_admin" INTEGER NOT NULL,
+    "is_active" INTEGER NOT NULL
 )

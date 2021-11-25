@@ -1,7 +1,10 @@
 definitions:
   command.CreateUserCommand:
     properties:
-      is_admin:
+      isActive:
+        example: true
+        type: boolean
+      isAdmin:
         example: false
         type: boolean
       name:
@@ -10,15 +13,23 @@ definitions:
       password:
         example: "123"
         type: string
+    required:
+    - name
+    - password
     type: object
   command.UpdateUserCommand:
     properties:
       id:
         example: 1
         type: integer
-      isAdmin:
-        example: true
+      isActive:
+        example: false
         type: boolean
+      isAdmin:
+        example: false
+        type: boolean
+    required:
+    - id
     type: object
   entity.User:
     properties:
@@ -28,6 +39,9 @@ definitions:
       id:
         example: 1
         type: integer
+      isActive:
+        example: true
+        type: boolean
       isAdmin:
         example: true
         type: boolean
@@ -41,8 +55,10 @@ definitions:
   query.UserAuthorizeQuery:
     properties:
       password:
+        example: "123"
         type: string
       username:
+        example: admin
         type: string
     required:
     - password
@@ -113,7 +129,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.User'
+            items:
+              $ref: '#/definitions/entity.User'
+            type: array
         "401":
           description: Unauthorized
           schema:
@@ -183,6 +201,37 @@ paths:
       security:
       - Bearer: []
       summary: Update user
+      tags:
+      - Users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: DeleteUser
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Delete user
       tags:
       - Users
 securityDefinitions:

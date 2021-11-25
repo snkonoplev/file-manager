@@ -38,6 +38,14 @@ func (h *AuthorizeHandler) Handle(context context.Context, q interface{}) (inter
 			}
 		}
 
+		if !user.IsActive {
+			return nil, &mediator.HandlerError{
+				StatusCode: http.StatusUnauthorized,
+				Message:    "user is inactive",
+				Err:        err,
+			}
+		}
+
 		return user, nil
 	}
 

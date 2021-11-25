@@ -63,6 +63,7 @@ func (h *CreateUserHandler) Handle(context context.Context, c interface{}) (inte
 			Name:     createUserCommand.Name,
 			Password: passwordHash,
 			IsAdmin:  createUserCommand.IsAdmin,
+			IsActive: createUserCommand.IsActive,
 		}
 
 		userId, err := h.repository.CreateUser(context, user)
