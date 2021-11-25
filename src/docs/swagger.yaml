@@ -234,6 +234,32 @@ paths:
       summary: Delete user
       tags:
       - Users
+    get:
+      consumes:
+      - application/json
+      operationId: GetUser
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get user by id
+      tags:
+      - Users
 securityDefinitions:
   Bearer:
     in: header

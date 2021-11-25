@@ -20,7 +20,7 @@ func NewConfiguration() (*viper.Viper, error) {
 	err := v.ReadInConfig()
 
 	if err != nil {
-		return nil, fmt.Errorf("can't read config file %s", err)
+		return nil, fmt.Errorf("can't read config file %w", err)
 	}
 
 	v.AutomaticEnv()

@@ -33,6 +33,7 @@ func (r *Router) MapHandlers() error {
 	users := r.engine.Group("/users").Use(auth.MiddlewareFunc())
 	{
 		users.GET("", r.usersController.GetUsers)
+		users.GET(":id", r.usersController.GetUser)
 		users.POST("", r.usersController.CreteUser)
 		users.PUT("", r.usersController.UpdateUser)
 		users.DELETE(":id", r.usersController.DeleteUser)

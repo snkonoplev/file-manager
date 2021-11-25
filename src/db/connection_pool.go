@@ -10,7 +10,7 @@ import (
 func NewDbConnection(filepath string) (*sqlx.DB, error) {
 	db, err := sqlx.Connect("sqlite3", filepath)
 	if err != nil {
-		return nil, fmt.Errorf("can't create db connection %s", err)
+		return nil, fmt.Errorf("can't create db connection %w", err)
 	}
 
 	return db, nil

@@ -37,7 +37,7 @@ func (b *Bootstrap) Run() error {
 
 	err := b.runMigrations()
 	if err != nil {
-		return fmt.Errorf("can't migrate db %s", err)
+		return fmt.Errorf("can't migrate db %w", err)
 	}
 	logrus.Info("migrations compleated")
 

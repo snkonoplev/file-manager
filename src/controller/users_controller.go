@@ -175,3 +175,40 @@ func (h *UsersController) DeleteUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, result)
 }
+
+// @Id GetUser
+// @Summary Get user by id
+// @Accept  json
+// @Produce  json
+// @Security Bearer
+// @Param id path int true "User id"
+// @Router /users/{id} [get]
+// @Success 200 {object} entity.User
+// @Failure 401 {string} string
+// @Tags Users
+func (h *UsersController) GetUser(c *gin.Context) {
+	strId := c.Param("id")
+
+	id, err := strconv.ParseInt(strId, 10, 64)
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("can't convert %s to int", strId))
+		return
+	}
+
+	q := query.UserQuery{
+		Id: id,
+	}
+
+	result, err := h.mediator.Handle(c.Request.Context(), q)
+	if err != nil {
+		target := &mediator.HandlerError{}
+		if errors.As(err, &target) {
+			c.String(target.StatusCode, target.Message)
+			return
+		}
+
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}

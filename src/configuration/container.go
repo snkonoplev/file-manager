@@ -58,6 +58,7 @@ func registerHandlers(container *dig.Container) {
 	container.Provide(queryhandler.NewAuthorizeHandler)
 	container.Provide(commandhandler.NewUpdateUserHandler)
 	container.Provide(commandhandler.NewDeleteUserHandler)
+	container.Provide(queryhandler.NewUserHandler)
 
 	container.Provide(func(usersHandler *queryhandler.UsersHandler) map[reflect.Type]mediator.Handler {
 		return make(map[reflect.Type]mediator.Handler)
@@ -77,5 +78,8 @@ func registerHandlers(container *dig.Container) {
 	})
 	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *commandhandler.DeleteUserHandler) {
 		handlers[reflect.TypeOf(command.DeleteUserCommand{})] = handler
+	})
+	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *queryhandler.UserHandler) {
+		handlers[reflect.TypeOf(query.UserQuery{})] = handler
 	})
 }
