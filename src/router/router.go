@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/snkonoplev/file-manager/auth"
 	"github.com/snkonoplev/file-manager/controller"
+	"github.com/snkonoplev/file-manager/proxy"
 )
 
 type Router struct {
@@ -26,6 +27,8 @@ func (r *Router) MapHandlers() error {
 	if err != nil {
 		return err
 	}
+
+	r.engine.Any("/transmission/*proxyPath", proxy.Proxy)
 
 	r.engine.POST("/login", auth.LoginHandler)
 	r.engine.GET("/refresh_token", auth.RefreshHandler)
