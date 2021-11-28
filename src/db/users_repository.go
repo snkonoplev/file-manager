@@ -79,7 +79,7 @@ func (r *UsersRepository) Authorize(context context.Context, userName string, pa
 	if security.CheckPasswordHash(password, user.Password) {
 		sql = "UPDATE users SET last_login=:last_login WHERE id=:id"
 		_, err := r.db.NamedExecContext(context, sql, map[string]interface{}{
-			"last_login": time.Now().UTC().Unix(),
+			"last_login": time.Now().UTC().UnixMilli(),
 			"id":         user.Id,
 		})
 		if err != nil {

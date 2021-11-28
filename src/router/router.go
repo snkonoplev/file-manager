@@ -35,6 +35,7 @@ func (r *Router) MapHandlers() error {
 	if r.viper.GetString("GIN_MODE") == "debug" {
 		config := cors.DefaultConfig()
 		config.AllowOrigins = []string{"http://localhost:8080"}
+		config.AllowHeaders = []string{"Authorization"}
 		config.AllowCredentials = true
 
 		r.engine.Use(cors.New(config))

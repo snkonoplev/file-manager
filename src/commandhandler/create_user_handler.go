@@ -59,7 +59,7 @@ func (h *CreateUserHandler) Handle(context context.Context, c interface{}) (inte
 		}
 
 		user := entity.User{
-			Created:  time.Now().UTC().Unix(),
+			Created:  time.Now().UTC().UnixMilli(),
 			Name:     createUserCommand.Name,
 			Password: passwordHash,
 			IsAdmin:  createUserCommand.IsAdmin,
