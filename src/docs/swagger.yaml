@@ -260,6 +260,27 @@ paths:
       summary: Get user by id
       tags:
       - Users
+  /users/current:
+    get:
+      consumes:
+      - application/json
+      operationId: CurrentUser
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get current
+      tags:
+      - Users
 securityDefinitions:
   Bearer:
     in: header

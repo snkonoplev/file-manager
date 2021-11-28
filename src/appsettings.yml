@@ -2,9 +2,11 @@ ADMIN_PASSWORD: "123"
 DB:
   FILE_PATH: "./manager.db"
 JWT:
-  SECRET: "test"
+  SECRET: "testasdsadsadsadasd"
 SWAGGER:
   ENABLED: true
   SCHEMA: "http"
-  HOST: "localhost:8080"
+  HOST: "localhost:5000"
   BASE_PATH: ""
+GIN:
+  MODE: "debug"

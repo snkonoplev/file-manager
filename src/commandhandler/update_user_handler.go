@@ -2,6 +2,7 @@ package commandhandler
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/snkonoplev/file-manager/command"
@@ -39,6 +40,12 @@ func (h *UpdateUserHandler) Handle(context context.Context, c interface{}) (inte
 		user, err := h.repository.UpdateUser(context, user)
 
 		if err != nil {
+
+			target := &mediator.HandlerError{}
+			if errors.As(err, &target) {
+				return nil, target
+			}
+
 			return nil, &mediator.HandlerError{
 				StatusCode: http.StatusInternalServerError,
 				Message:    "can't update user",

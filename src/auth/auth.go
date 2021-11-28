@@ -12,8 +12,8 @@ import (
 )
 
 type Claim struct {
-	UserName string
-	IsAdmin  bool
+	UserId  int64
+	IsAdmin bool
 }
 
 type Auth struct {
@@ -29,7 +29,7 @@ func NewAuth(viper *viper.Viper, mediator *mediator.Mediator) *Auth {
 }
 
 var Claims string = "claims"
-var IdentityKey string = "user_name"
+var IdentityKey string = "user_id"
 var IsAdminKey string = "is_admin"
 
 // @Id Login
@@ -51,7 +51,7 @@ func (a *Auth) AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(entity.User); ok {
 				return jwt.MapClaims{
-					IdentityKey: v.Name,
+					IdentityKey: v.Id,
 					IsAdminKey:  v.IsAdmin,
 				}
 			}
@@ -59,10 +59,14 @@ func (a *Auth) AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
-			return &Claim{
-				UserName: claims[IdentityKey].(string),
-				IsAdmin:  claims[IsAdminKey].(bool),
+			userClaims := Claim{
+				UserId:  int64(claims[IdentityKey].(float64)),
+				IsAdmin: claims[IsAdminKey].(bool),
 			}
+
+			c.Set(Claims, userClaims)
+
+			return &userClaims
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			var query query.UserAuthorizeQuery

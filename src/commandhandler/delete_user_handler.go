@@ -2,6 +2,7 @@ package commandhandler
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/snkonoplev/file-manager/command"
@@ -31,6 +32,12 @@ func (h *DeleteUserHandler) Handle(context context.Context, c interface{}) (inte
 
 		id, err := h.repository.DeleteUser(context, deleteUserCommand.Id)
 		if err != nil {
+
+			target := &mediator.HandlerError{}
+			if errors.As(err, &target) {
+				return nil, target
+			}
+
 			return nil, &mediator.HandlerError{
 				StatusCode: http.StatusInternalServerError,
 				Message:    "can't delete user",

@@ -3,11 +3,13 @@ package db
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 
 	"github.com/snkonoplev/file-manager/entity"
+	"github.com/snkonoplev/file-manager/mediator"
 	"github.com/snkonoplev/file-manager/security"
 )
 
@@ -106,7 +108,10 @@ func (r *UsersRepository) UpdateUser(context context.Context, user entity.User) 
 		return user, nil
 	}
 
-	return user, fmt.Errorf("can't find user with id %d", user.Id)
+	return user, &mediator.HandlerError{
+		StatusCode: http.StatusBadRequest,
+		Message:    "can't find user",
+	}
 }
 
 func (r *UsersRepository) DeleteUser(context context.Context, id int64) (int64, error) {
@@ -125,7 +130,10 @@ func (r *UsersRepository) DeleteUser(context context.Context, id int64) (int64, 
 		return id, nil
 	}
 
-	return id, fmt.Errorf("can't find user with id %d", id)
+	return id, &mediator.HandlerError{
+		StatusCode: http.StatusBadRequest,
+		Message:    "can't find user",
+	}
 }
 
 func (r *UsersRepository) GetUser(context context.Context, id int64) (entity.User, error) {

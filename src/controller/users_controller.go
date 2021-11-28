@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/snkonoplev/file-manager/auth"
 	"github.com/snkonoplev/file-manager/command"
@@ -67,12 +66,9 @@ func (h *UsersController) CreteUser(c *gin.Context) {
 		return
 	}
 
-	claims := jwt.ExtractClaims(c)
-
-	if c, ok := claims[auth.IsAdminKey]; ok {
-		if k, ok := c.(bool); ok {
-			user.IsCallerAdmin = k
-		}
+	if claims, ok := c.Get(auth.Claims); ok {
+		claim := claims.(*auth.Claim)
+		user.IsCallerAdmin = claim.IsAdmin
 	}
 
 	result, err := h.mediator.Handle(c, user)
@@ -107,12 +103,9 @@ func (h *UsersController) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	claims := jwt.ExtractClaims(c)
-
-	if c, ok := claims[auth.IsAdminKey]; ok {
-		if k, ok := c.(bool); ok {
-			user.IsCallerAdmin = k
-		}
+	if claims, ok := c.Get(auth.Claims); ok {
+		claim := claims.(*auth.Claim)
+		user.IsCallerAdmin = claim.IsAdmin
 	}
 
 	result, err := h.mediator.Handle(c, user)
@@ -154,12 +147,9 @@ func (h *UsersController) DeleteUser(c *gin.Context) {
 		Id: id,
 	}
 
-	claims := jwt.ExtractClaims(c)
-
-	if c, ok := claims[auth.IsAdminKey]; ok {
-		if k, ok := c.(bool); ok {
-			user.IsCallerAdmin = k
-		}
+	if claims, ok := c.Get(auth.Claims); ok {
+		claim := claims.(*auth.Claim)
+		user.IsCallerAdmin = claim.IsAdmin
 	}
 
 	result, err := h.mediator.Handle(c, user)
@@ -197,6 +187,40 @@ func (h *UsersController) GetUser(c *gin.Context) {
 
 	q := query.UserQuery{
 		Id: id,
+	}
+
+	result, err := h.mediator.Handle(c, q)
+	if err != nil {
+		target := &mediator.HandlerError{}
+		if errors.As(err, &target) {
+			c.String(target.StatusCode, target.Message)
+			return
+		}
+
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+// @Id CurrentUser
+// @Summary Get current
+// @Accept  json
+// @Produce  json
+// @Security Bearer
+// @Router /users/current [get]
+// @Success 200 {object} entity.User
+// @Failure 401 {string} string
+// @Tags Users
+func (h *UsersController) CurrentUser(c *gin.Context) {
+
+	q := query.UserQuery{}
+
+	if claims, ok := c.Get(auth.Claims); ok {
+		claim := claims.(*auth.Claim)
+		q.Id = claim.UserId
+	} else {
+		c.String(http.StatusBadRequest, "can't get user id from claims")
 	}
 
 	result, err := h.mediator.Handle(c, q)
