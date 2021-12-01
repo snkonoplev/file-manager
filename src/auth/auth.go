@@ -93,6 +93,6 @@ func (a *Auth) AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 		},
 		TokenLookup:   "header: Authorization, cookie: jwt",
 		TokenHeadName: "Bearer",
-		TimeFunc:      time.Now,
+		TimeFunc:      time.Now().UTC,
 	})
 }
