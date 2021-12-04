@@ -43,17 +43,20 @@ func (r *Router) MapHandlers() error {
 
 	r.engine.Any("/transmission/*proxyPath", proxy.Proxy)
 
-	r.engine.POST("/login", auth.LoginHandler)
-	r.engine.GET("/refresh_token", auth.RefreshHandler)
-
-	users := r.engine.Group("/users").Use(auth.MiddlewareFunc())
+	api := r.engine.Group("/api")
 	{
-		users.GET("", r.usersController.GetUsers)
-		users.GET(":id", r.usersController.GetUser)
-		users.GET("/current", r.usersController.CurrentUser)
-		users.POST("", r.usersController.CreteUser)
-		users.PUT("", r.usersController.UpdateUser)
-		users.DELETE(":id", r.usersController.DeleteUser)
+		api.POST("/login", auth.LoginHandler)
+		api.GET("/refresh_token", auth.RefreshHandler)
+
+		users := api.Group("/users").Use(auth.MiddlewareFunc())
+		{
+			users.GET("", r.usersController.GetUsers)
+			users.GET(":id", r.usersController.GetUser)
+			users.GET("/current", r.usersController.CurrentUser)
+			users.POST("", r.usersController.CreteUser)
+			users.PUT("", r.usersController.UpdateUser)
+			users.DELETE(":id", r.usersController.DeleteUser)
+		}
 	}
 
 	return nil

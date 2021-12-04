@@ -46,7 +46,6 @@ func (a *Auth) AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 		Realm:       "file-manager",
 		Key:         []byte(a.secret),
 		Timeout:     time.Hour,
-		MaxRefresh:  time.Hour,
 		IdentityKey: Claims,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(entity.User); ok {
@@ -93,6 +92,6 @@ func (a *Auth) AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 		},
 		TokenLookup:   "header: Authorization, cookie: jwt",
 		TokenHeadName: "Bearer",
-		TimeFunc:      time.Now().UTC,
+		TimeFunc:      time.Now,
 	})
 }

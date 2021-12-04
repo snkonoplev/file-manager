@@ -1,8 +1,8 @@
 ADMIN_PASSWORD: "123"
 DB:
-  FILE_PATH: "./manager.db"
+  FILE_PATH: "./data/manager.db"
 JWT:
-  SECRET: "testasdsadsadsadasd"
+  SECRET: "123"
 SWAGGER:
   ENABLED: true
   SCHEMA: "http"
