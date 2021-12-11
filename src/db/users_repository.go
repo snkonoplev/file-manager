@@ -89,7 +89,10 @@ func (r *UsersRepository) Authorize(context context.Context, userName string, pa
 		return user, nil
 	}
 
-	return user, fmt.Errorf("incorrect password")
+	return user, &mediator.HandlerError{
+		StatusCode: http.StatusBadRequest,
+		Message:    "incorrect password",
+	}
 }
 
 func (r *UsersRepository) UpdateUser(context context.Context, user entity.User) (entity.User, error) {
@@ -145,4 +148,26 @@ func (r *UsersRepository) GetUser(context context.Context, id int64) (entity.Use
 	}
 
 	return user, nil
+}
+
+func (r *UsersRepository) ChangePassword(context context.Context, name string, password string) (int64, error) {
+	sql := "UPDATE users SET password=? WHERE name=?"
+	result, err := r.db.ExecContext(context, sql, password, name)
+	if err != nil {
+		return 0, fmt.Errorf("can't change password %w", err)
+	}
+
+	count, err := result.RowsAffected()
+	if err != nil {
+		return 0, fmt.Errorf("can't get affected rows %w", err)
+	}
+
+	if count == 1 {
+		return count, nil
+	}
+
+	return count, &mediator.HandlerError{
+		StatusCode: http.StatusBadRequest,
+		Message:    "can't find user",
+	}
 }

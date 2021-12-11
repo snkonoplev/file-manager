@@ -56,6 +56,7 @@ func (r *Router) MapHandlers() error {
 			users.POST("", r.usersController.CreteUser)
 			users.PUT("", r.usersController.UpdateUser)
 			users.DELETE(":id", r.usersController.DeleteUser)
+			users.PUT("/change-password", r.usersController.ChangePassword)
 		}
 	}
 

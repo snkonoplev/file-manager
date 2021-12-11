@@ -1,4 +1,20 @@
 definitions:
+  command.ChangePasswordCommand:
+    properties:
+      name:
+        example: adam
+        type: string
+      newPassword:
+        example: "123"
+        type: string
+      previousPassword:
+        example: "123"
+        type: string
+    required:
+    - name
+    - newPassword
+    - previousPassword
+    type: object
   command.CreateUserCommand:
     properties:
       isActive:
@@ -67,7 +83,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /login:
+  /api/login:
     post:
       consumes:
       - application/json
@@ -95,7 +111,7 @@ paths:
       summary: Get access token
       tags:
       - Auth
-  /refresh_token:
+  /api/refresh_token:
     get:
       consumes:
       - application/json
@@ -118,7 +134,7 @@ paths:
       summary: Refresh access token
       tags:
       - Auth
-  /users:
+  /api/users:
     get:
       consumes:
       - application/json
@@ -203,7 +219,7 @@ paths:
       summary: Update user
       tags:
       - Users
-  /users/{id}:
+  /api/users/{id}:
     delete:
       consumes:
       - application/json
@@ -260,7 +276,39 @@ paths:
       summary: Get user by id
       tags:
       - Users
-  /users/current:
+  /api/users/change-password:
+    put:
+      consumes:
+      - application/json
+      operationId: ChangePassword
+      parameters:
+      - description: Password
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/command.ChangePasswordCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Change password
+      tags:
+      - Users
+  /api/users/current:
     get:
       consumes:
       - application/json

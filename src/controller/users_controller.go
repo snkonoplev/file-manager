@@ -28,7 +28,7 @@ func NewUsersController(mediator *mediator.Mediator) *UsersController {
 // @Accept  json
 // @Produce  json
 // @Security Bearer
-// @Router /users [get]
+// @Router /api/users [get]
 // @Success 200 {object} []entity.User
 // @Failure 401 {string} string
 // @Tags Users
@@ -53,7 +53,7 @@ func (h *UsersController) GetUsers(c *gin.Context) {
 // @Produce  json
 // @Security Bearer
 // @Param Body body command.CreateUserCommand true "User"
-// @Router /users [post]
+// @Router /api/users [post]
 // @Success 200 {object} int
 // @Failure 401 {string} string
 // @Failure 403 {string} string
@@ -91,7 +91,7 @@ func (h *UsersController) CreteUser(c *gin.Context) {
 // @Produce  json
 // @Security Bearer
 // @Param Body body command.UpdateUserCommand true "User"
-// @Router /users [put]
+// @Router /api/users [put]
 // @Success 200 {object} int
 // @Failure 401 {string} string
 // @Failure 403 {string} string
@@ -128,7 +128,7 @@ func (h *UsersController) UpdateUser(c *gin.Context) {
 // @Produce  json
 // @Security Bearer
 // @Param id path int true "User id"
-// @Router /users/{id} [delete]
+// @Router /api/users/{id} [delete]
 // @Success 200 {object} int
 // @Failure 401 {string} string
 // @Failure 403 {string} string
@@ -172,7 +172,7 @@ func (h *UsersController) DeleteUser(c *gin.Context) {
 // @Produce  json
 // @Security Bearer
 // @Param id path int true "User id"
-// @Router /users/{id} [get]
+// @Router /api/users/{id} [get]
 // @Success 200 {object} entity.User
 // @Failure 401 {string} string
 // @Tags Users
@@ -208,7 +208,7 @@ func (h *UsersController) GetUser(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Security Bearer
-// @Router /users/current [get]
+// @Router /api/users/current [get]
 // @Success 200 {object} entity.User
 // @Failure 401 {string} string
 // @Tags Users
@@ -224,6 +224,44 @@ func (h *UsersController) CurrentUser(c *gin.Context) {
 	}
 
 	result, err := h.mediator.Handle(c, q)
+	if err != nil {
+		target := &mediator.HandlerError{}
+		if errors.As(err, &target) {
+			c.String(target.StatusCode, target.Message)
+			return
+		}
+
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+// @Id ChangePassword
+// @Summary Change password
+// @Accept  json
+// @Produce  json
+// @Security Bearer
+// @Param Body body command.ChangePasswordCommand true "Password"
+// @Router /api/users/change-password [put]
+// @Success 200 {object} int
+// @Failure 401 {string} string
+// @Failure 403 {string} string
+// @Tags Users
+func (h *UsersController) ChangePassword(c *gin.Context) {
+
+	var passwordCommand command.ChangePasswordCommand
+	if err := c.ShouldBind(&passwordCommand); err != nil {
+		c.String(http.StatusBadRequest, "can't bind password model")
+		return
+	}
+
+	if claims, ok := c.Get(auth.Claims); ok {
+		claim := claims.(*auth.Claim)
+		passwordCommand.IsCallerAdmin = claim.IsAdmin
+	}
+
+	result, err := h.mediator.Handle(c, passwordCommand)
 	if err != nil {
 		target := &mediator.HandlerError{}
 		if errors.As(err, &target) {

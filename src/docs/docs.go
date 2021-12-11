@@ -23,7 +23,7 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/login": {
+        "/api/login": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -66,7 +66,7 @@ var doc = `{
                 }
             }
         },
-        "/refresh_token": {
+        "/api/refresh_token": {
             "get": {
                 "security": [
                     {
@@ -103,7 +103,7 @@ var doc = `{
                 }
             }
         },
-        "/users": {
+        "/api/users": {
             "get": {
                 "security": [
                     {
@@ -238,7 +238,58 @@ var doc = `{
                 }
             }
         },
-        "/users/current": {
+        "/api/users/change-password": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Change password",
+                "operationId": "ChangePassword",
+                "parameters": [
+                    {
+                        "description": "Password",
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/command.ChangePasswordCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/current": {
             "get": {
                 "security": [
                     {
@@ -272,7 +323,7 @@ var doc = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/api/users/{id}": {
             "get": {
                 "security": [
                     {
@@ -364,6 +415,28 @@ var doc = `{
         }
     },
     "definitions": {
+        "command.ChangePasswordCommand": {
+            "type": "object",
+            "required": [
+                "name",
+                "newPassword",
+                "previousPassword"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "adam"
+                },
+                "newPassword": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "previousPassword": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
         "command.CreateUserCommand": {
             "type": "object",
             "required": [

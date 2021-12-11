@@ -37,7 +37,7 @@ var IsAdminKey string = "is_admin"
 // @Accept  json
 // @Produce  json
 // @Param Body body query.UserAuthorizeQuery true "User"
-// @Router /login [post]
+// @Router /api/login [post]
 // @Success 200 {object} map[string]string
 // @Failure 401 {string} string
 // @Tags Auth

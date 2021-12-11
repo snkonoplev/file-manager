@@ -77,7 +77,7 @@ func (b *Bootstrap) runMigrations() error {
 // @Accept  json
 // @Produce  json
 // @Security Bearer
-// @Router /refresh_token [get]
+// @Router /api/refresh_token [get]
 // @Success 200 {object} map[string]string
 // @Failure 401 {string} string
 // @Tags Auth
