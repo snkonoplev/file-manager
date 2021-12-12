@@ -258,7 +258,7 @@ func (h *UsersController) ChangePassword(c *gin.Context) {
 
 	if claims, ok := c.Get(auth.Claims); ok {
 		claim := claims.(*auth.Claim)
-		passwordCommand.IsCallerAdmin = claim.IsAdmin
+		passwordCommand.ClaimUserId = claim.UserId
 	}
 
 	result, err := h.mediator.Handle(c, passwordCommand)

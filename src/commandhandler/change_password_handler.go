@@ -25,14 +25,31 @@ func NewChangePasswordHandler(repository *db.UsersRepository) *ChangePasswordHan
 func (h *ChangePasswordHandler) Handle(context context.Context, c interface{}) (interface{}, error) {
 	if changePasswordCommand, ok := c.(command.ChangePasswordCommand); ok {
 
-		if !changePasswordCommand.IsCallerAdmin {
+		user, err := h.repository.GetUser(context, changePasswordCommand.ClaimUserId)
+		if err != nil {
+
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, &mediator.HandlerError{
+					StatusCode: http.StatusNotFound,
+					Message:    "can't find user",
+				}
+			}
+
 			return nil, &mediator.HandlerError{
-				StatusCode: http.StatusForbidden,
-				Message:    "you need admin rights to perform this operation",
+				StatusCode: http.StatusInternalServerError,
+				Message:    "can't find user",
+				Err:        err,
 			}
 		}
 
-		_, err := h.repository.Authorize(context, changePasswordCommand.Name, changePasswordCommand.PreviousPassword)
+		if user.Name != changePasswordCommand.Name {
+			return nil, &mediator.HandlerError{
+				StatusCode: http.StatusBadRequest,
+				Message:    "wrong user name",
+			}
+		}
+
+		_, err = h.repository.Authorize(context, changePasswordCommand.Name, changePasswordCommand.PreviousPassword)
 		if err != nil {
 
 			if errors.Is(err, sql.ErrNoRows) {
