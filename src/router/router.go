@@ -27,7 +27,7 @@ func NewRouter(engine *gin.Engine, usersController *controller.UsersController, 
 
 func (r *Router) MapHandlers() error {
 
-	auth, err := r.a.AuthMiddleware()
+	a, err := r.a.AuthMiddleware()
 	if err != nil {
 		return err
 	}
@@ -41,14 +41,15 @@ func (r *Router) MapHandlers() error {
 		r.engine.Use(cors.New(config))
 	}
 
-	r.engine.Any("/transmission/*proxyPath", proxy.Proxy)
+	r.engine.Any("/transmission/*proxyPath", a.MiddlewareFunc(), proxy.Proxy)
 
 	api := r.engine.Group("/api")
 	{
-		api.POST("/login", auth.LoginHandler)
-		api.GET("/refresh_token", auth.RefreshHandler)
+		api.POST("/login", a.LoginHandler)
+		api.GET("/refresh_token", a.RefreshHandler)
+		api.GET("/set-cookie", auth.SetCookie)
 
-		users := api.Group("/users").Use(auth.MiddlewareFunc())
+		users := api.Group("/users").Use(a.MiddlewareFunc())
 		{
 			users.GET("", r.usersController.GetUsers)
 			users.GET(":id", r.usersController.GetUser)
