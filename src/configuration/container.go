@@ -3,6 +3,7 @@ package configuration
 import (
 	"reflect"
 
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/snkonoplev/file-manager/auth"
@@ -41,6 +42,7 @@ func BuildContainer() *dig.Container {
 			gin.Recovery(),
 			Trace(),
 			Logger(),
+			gzip.Gzip(gzip.DefaultCompression),
 		)
 		return r
 	})
@@ -53,6 +55,7 @@ func BuildContainer() *dig.Container {
 
 func registerHttpHandlers(container *dig.Container) {
 	container.Provide(controller.NewUsersController)
+	container.Provide(controller.NewSystemController)
 }
 
 func registerHandlers(container *dig.Container) {
@@ -64,6 +67,7 @@ func registerHandlers(container *dig.Container) {
 	container.Provide(commandhandler.NewDeleteUserHandler)
 	container.Provide(queryhandler.NewUserHandler)
 	container.Provide(commandhandler.NewChangePasswordHandler)
+	container.Provide(queryhandler.NewDiskUsageHandler)
 
 	container.Provide(func(usersHandler *queryhandler.UsersHandler) map[reflect.Type]mediator.Handler {
 		return make(map[reflect.Type]mediator.Handler)
@@ -89,5 +93,8 @@ func registerHandlers(container *dig.Container) {
 	})
 	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *commandhandler.ChangePasswordHandler) {
 		handlers[reflect.TypeOf(command.ChangePasswordCommand{})] = handler
+	})
+	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *queryhandler.DiskUsageHandler) {
+		handlers[reflect.TypeOf(query.DiskUsageQuery{})] = handler
 	})
 }

@@ -47,6 +47,21 @@ definitions:
     required:
     - id
     type: object
+  entity.DiskUsage:
+    properties:
+      available:
+        example: 1637768672
+        type: integer
+      size:
+        example: 1637768672
+        type: integer
+      usage:
+        example: 1637768672
+        type: number
+      used:
+        example: 1637768672
+        type: integer
+    type: object
   entity.User:
     properties:
       created:
@@ -134,6 +149,23 @@ paths:
       summary: Refresh access token
       tags:
       - Auth
+  /api/system/disk-usage:
+    get:
+      consumes:
+      - application/json
+      operationId: GetDiskUsage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.DiskUsage'
+      security:
+      - Bearer: []
+      summary: Get disk usage
+      tags:
+      - System
   /api/users:
     get:
       consumes:

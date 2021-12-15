@@ -16,3 +16,5 @@ PROXY:
     ENABLED: false
     USER_NAME: "busy-flamingo"
     PASSWORD: "123"
+STORAGE:
+  PATH: "./data/"

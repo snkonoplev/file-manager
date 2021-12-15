@@ -103,6 +103,34 @@ var doc = `{
                 }
             }
         },
+        "/api/system/disk-usage": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get disk usage",
+                "operationId": "GetDiskUsage",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.DiskUsage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/users": {
             "get": {
                 "security": [
@@ -479,6 +507,27 @@ var doc = `{
                 "isAdmin": {
                     "type": "boolean",
                     "example": false
+                }
+            }
+        },
+        "entity.DiskUsage": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "type": "integer",
+                    "example": 1637768672
+                },
+                "size": {
+                    "type": "integer",
+                    "example": 1637768672
+                },
+                "usage": {
+                    "type": "number",
+                    "example": 1637768672
+                },
+                "used": {
+                    "type": "integer",
+                    "example": 1637768672
                 }
             }
         },
