@@ -14,14 +14,16 @@ type Router struct {
 	usersController *controller.UsersController
 	a               *auth.Auth
 	viper           *viper.Viper
+	p               *proxy.Proxy
 }
 
-func NewRouter(engine *gin.Engine, usersController *controller.UsersController, auth *auth.Auth, viper *viper.Viper) *Router {
+func NewRouter(engine *gin.Engine, usersController *controller.UsersController, auth *auth.Auth, viper *viper.Viper, p *proxy.Proxy) *Router {
 	return &Router{
 		engine:          engine,
 		usersController: usersController,
 		a:               auth,
 		viper:           viper,
+		p:               p,
 	}
 }
 
@@ -41,13 +43,12 @@ func (r *Router) MapHandlers() error {
 		r.engine.Use(cors.New(config))
 	}
 
-	r.engine.Any("/transmission/*proxyPath", a.MiddlewareFunc(), proxy.Proxy)
+	r.engine.Any("/transmission/*proxyPath", a.MiddlewareFunc(), r.p.Handle)
 
 	api := r.engine.Group("/api")
 	{
 		api.POST("/login", a.LoginHandler)
 		api.GET("/refresh_token", a.RefreshHandler)
-		api.GET("/set-cookie", auth.SetCookie)
 
 		users := api.Group("/users").Use(a.MiddlewareFunc())
 		{

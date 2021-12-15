@@ -12,6 +12,7 @@ import (
 	"github.com/snkonoplev/file-manager/controller"
 	"github.com/snkonoplev/file-manager/db"
 	"github.com/snkonoplev/file-manager/mediator"
+	"github.com/snkonoplev/file-manager/proxy"
 	"github.com/snkonoplev/file-manager/query"
 	"github.com/snkonoplev/file-manager/queryhandler"
 	"github.com/snkonoplev/file-manager/router"
@@ -31,6 +32,7 @@ func BuildContainer() *dig.Container {
 	container.Provide(mediator.NewMediator)
 	container.Provide(auth.NewAuth)
 	container.Provide(bootstrap.NewSwagger)
+	container.Provide(proxy.NewProxy)
 
 	container.Provide(router.NewRouter)
 	container.Provide(func() *gin.Engine {
