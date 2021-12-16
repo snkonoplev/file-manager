@@ -103,6 +103,34 @@ var doc = `{
                 }
             }
         },
+        "/api/system/cpu-usage": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get CPU usage",
+                "operationId": "GetCpuUsage",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.CpuUsage"
+                        }
+                    }
+                }
+            }
+        },
         "/api/system/disk-usage": {
             "get": {
                 "security": [
@@ -126,6 +154,90 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/entity.DiskUsage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/system/load-avg": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get Get load avg",
+                "operationId": "GetLoadAvg",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.LoadAvg"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/system/memory-usage": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get memory usage",
+                "operationId": "GetMemoryUsage",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.MemoryUsage"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/system/up-time": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get Get up time",
+                "operationId": "GetUpTime",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.UpTime"
                         }
                     }
                 }
@@ -510,6 +622,31 @@ var doc = `{
                 }
             }
         },
+        "entity.CpuUsage": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer",
+                    "example": 1637768672
+                },
+                "idle": {
+                    "type": "integer",
+                    "example": 1637768672
+                },
+                "system": {
+                    "type": "integer",
+                    "example": 1637768672
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 1637768672
+                },
+                "user": {
+                    "type": "integer",
+                    "example": 1637768672
+                }
+            }
+        },
         "entity.DiskUsage": {
             "type": "object",
             "properties": {
@@ -526,6 +663,57 @@ var doc = `{
                     "example": 1637768672
                 },
                 "used": {
+                    "type": "integer",
+                    "example": 1637768672
+                }
+            }
+        },
+        "entity.LoadAvg": {
+            "type": "object",
+            "properties": {
+                "loadavg1": {
+                    "type": "number",
+                    "example": 1637768672
+                },
+                "loadavg15": {
+                    "type": "number",
+                    "example": 1637768672
+                },
+                "loadavg5": {
+                    "type": "number",
+                    "example": 1637768672
+                }
+            }
+        },
+        "entity.MemoryUsage": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "type": "integer",
+                    "example": 1637768672
+                },
+                "cached": {
+                    "type": "integer",
+                    "example": 1637768672
+                },
+                "free": {
+                    "type": "integer",
+                    "example": 1637768672
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 1637768672
+                },
+                "used": {
+                    "type": "integer",
+                    "example": 1637768672
+                }
+            }
+        },
+        "entity.UpTime": {
+            "type": "object",
+            "properties": {
+                "upTime": {
                     "type": "integer",
                     "example": 1637768672
                 }

@@ -47,6 +47,24 @@ definitions:
     required:
     - id
     type: object
+  entity.CpuUsage:
+    properties:
+      count:
+        example: 1637768672
+        type: integer
+      idle:
+        example: 1637768672
+        type: integer
+      system:
+        example: 1637768672
+        type: integer
+      total:
+        example: 1637768672
+        type: integer
+      user:
+        example: 1637768672
+        type: integer
+    type: object
   entity.DiskUsage:
     properties:
       available:
@@ -59,6 +77,42 @@ definitions:
         example: 1637768672
         type: number
       used:
+        example: 1637768672
+        type: integer
+    type: object
+  entity.LoadAvg:
+    properties:
+      loadavg1:
+        example: 1637768672
+        type: number
+      loadavg5:
+        example: 1637768672
+        type: number
+      loadavg15:
+        example: 1637768672
+        type: number
+    type: object
+  entity.MemoryUsage:
+    properties:
+      available:
+        example: 1637768672
+        type: integer
+      cached:
+        example: 1637768672
+        type: integer
+      free:
+        example: 1637768672
+        type: integer
+      total:
+        example: 1637768672
+        type: integer
+      used:
+        example: 1637768672
+        type: integer
+    type: object
+  entity.UpTime:
+    properties:
+      upTime:
         example: 1637768672
         type: integer
     type: object
@@ -149,6 +203,23 @@ paths:
       summary: Refresh access token
       tags:
       - Auth
+  /api/system/cpu-usage:
+    get:
+      consumes:
+      - application/json
+      operationId: GetCpuUsage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.CpuUsage'
+      security:
+      - Bearer: []
+      summary: Get CPU usage
+      tags:
+      - System
   /api/system/disk-usage:
     get:
       consumes:
@@ -164,6 +235,57 @@ paths:
       security:
       - Bearer: []
       summary: Get disk usage
+      tags:
+      - System
+  /api/system/load-avg:
+    get:
+      consumes:
+      - application/json
+      operationId: GetLoadAvg
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.LoadAvg'
+      security:
+      - Bearer: []
+      summary: Get Get load avg
+      tags:
+      - System
+  /api/system/memory-usage:
+    get:
+      consumes:
+      - application/json
+      operationId: GetMemoryUsage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.MemoryUsage'
+      security:
+      - Bearer: []
+      summary: Get memory usage
+      tags:
+      - System
+  /api/system/up-time:
+    get:
+      consumes:
+      - application/json
+      operationId: GetUpTime
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UpTime'
+      security:
+      - Bearer: []
+      summary: Get Get up time
       tags:
       - System
   /api/users:

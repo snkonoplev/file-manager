@@ -55,6 +55,10 @@ func (r *Router) MapHandlers() error {
 		system := api.Group("/system").Use(a.MiddlewareFunc())
 		{
 			system.GET("/disk-usage", r.systemController.GetDiskUsage)
+			system.GET("/memory-usage", r.systemController.GetMemoryUsage)
+			system.GET("/cpu-usage", r.systemController.GetCpuUsage)
+			system.GET("/load-avg", r.systemController.GetLoadAvg)
+			system.GET("/up-time", r.systemController.GetUpTime)
 		}
 
 		users := api.Group("/users").Use(a.MiddlewareFunc())

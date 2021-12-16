@@ -68,6 +68,10 @@ func registerHandlers(container *dig.Container) {
 	container.Provide(queryhandler.NewUserHandler)
 	container.Provide(commandhandler.NewChangePasswordHandler)
 	container.Provide(queryhandler.NewDiskUsageHandler)
+	container.Provide(queryhandler.NewMemoryUsageHandler)
+	container.Provide(queryhandler.NewCpuUsageHandler)
+	container.Provide(queryhandler.NewLoadAvgHandler)
+	container.Provide(queryhandler.NewUpTimeHandler)
 
 	container.Provide(func(usersHandler *queryhandler.UsersHandler) map[reflect.Type]mediator.Handler {
 		return make(map[reflect.Type]mediator.Handler)
@@ -96,5 +100,17 @@ func registerHandlers(container *dig.Container) {
 	})
 	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *queryhandler.DiskUsageHandler) {
 		handlers[reflect.TypeOf(query.DiskUsageQuery{})] = handler
+	})
+	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *queryhandler.MemoryUsageHandler) {
+		handlers[reflect.TypeOf(query.MemoryUsageQuery{})] = handler
+	})
+	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *queryhandler.CpuUsageHandler) {
+		handlers[reflect.TypeOf(query.CpuUsageQuery{})] = handler
+	})
+	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *queryhandler.LoadAvgHandler) {
+		handlers[reflect.TypeOf(query.LoadAvgQuery{})] = handler
+	})
+	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *queryhandler.UpTimeHandler) {
+		handlers[reflect.TypeOf(query.UpTimeQuery{})] = handler
 	})
 }
