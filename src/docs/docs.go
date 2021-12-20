@@ -154,7 +154,7 @@ var doc = `{
                 }
             }
         },
-        "/api/storage/download": {
+        "/api/storage/download/{file}": {
             "get": {
                 "security": [
                     {
@@ -177,7 +177,8 @@ var doc = `{
                         "type": "string",
                         "description": "File",
                         "name": "file",
-                        "in": "query"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {

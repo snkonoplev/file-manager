@@ -257,15 +257,16 @@ paths:
       summary: Get directory content
       tags:
       - Storage
-  /api/storage/download:
+  /api/storage/download/{file}:
     get:
       consumes:
       - application/json
       operationId: DownloadFile
       parameters:
       - description: File
-        in: query
+        in: path
         name: file
+        required: true
         type: string
       produces:
       - application/octet-stream

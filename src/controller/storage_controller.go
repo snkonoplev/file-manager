@@ -57,14 +57,14 @@ func (h *StorageController) GetDirectoryContent(c *gin.Context) {
 // @Accept  json
 // @Produce  octet-stream
 // @Security Bearer
-// @Param file query string false "File"
-// @Router /api/storage/download [get]
+// @Param file path string true "File"
+// @Router /api/storage/download/{file} [get]
 // @Success 200 {object} string
 // @Failure 401 {string} string
 // @Failure 404 {string} string
 // @Tags Storage
 func (h *StorageController) DownloadFile(c *gin.Context) {
-	filePath := c.DefaultQuery("file", ".")
+	filePath := c.Param("file")
 	file, err := os.Open(path.Join(h.storagePath, filePath))
 	if err != nil {
 		c.Status(http.StatusNotFound)

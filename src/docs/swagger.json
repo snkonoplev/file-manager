@@ -135,7 +135,7 @@
                 }
             }
         },
-        "/api/storage/download": {
+        "/api/storage/download/{file}": {
             "get": {
                 "security": [
                     {
@@ -158,7 +158,8 @@
                         "type": "string",
                         "description": "File",
                         "name": "file",
-                        "in": "query"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
