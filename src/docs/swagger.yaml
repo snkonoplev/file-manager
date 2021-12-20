@@ -257,6 +257,36 @@ paths:
       summary: Get directory content
       tags:
       - Storage
+  /api/storage/download:
+    get:
+      consumes:
+      - application/json
+      operationId: DownloadFile
+      parameters:
+      - description: File
+        in: query
+        name: file
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Download file from storage
+      tags:
+      - Storage
   /api/system/cpu-usage:
     get:
       consumes:

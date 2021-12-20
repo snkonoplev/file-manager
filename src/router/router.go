@@ -57,6 +57,7 @@ func (r *Router) MapHandlers() error {
 		storage := api.Group("/storage").Use(a.MiddlewareFunc())
 		{
 			storage.GET("", r.storageController.GetDirectoryContent)
+			storage.GET("/download", r.storageController.DownloadFile)
 		}
 
 		system := api.Group("/system").Use(a.MiddlewareFunc())

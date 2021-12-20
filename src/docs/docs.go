@@ -154,6 +154,54 @@ var doc = `{
                 }
             }
         },
+        "/api/storage/download": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "Storage"
+                ],
+                "summary": "Download file from storage",
+                "operationId": "DownloadFile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "File",
+                        "name": "file",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/system/cpu-usage": {
             "get": {
                 "security": [

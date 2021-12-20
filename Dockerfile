@@ -14,7 +14,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=build_base /app/service .
 COPY --from=build_base /app/appsettings.yml .
-COPY --from=build_base /app/data/manager.db ./data/
+#COPY --from=build_base /app/data/manager.db ./data/
 COPY --from=build_base /app/migrations/ ./migrations/
 
 VOLUME ["/data"]
