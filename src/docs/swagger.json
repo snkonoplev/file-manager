@@ -84,6 +84,57 @@
                 }
             }
         },
+        "/api/storage": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Storage"
+                ],
+                "summary": "Get directory content",
+                "operationId": "GetDirectoryContent",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Path",
+                        "name": "path",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.DirectoryDataWrapper"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/system/cpu-usage": {
             "get": {
                 "security": [
@@ -611,20 +662,52 @@
                     "example": 1637768672
                 },
                 "idle": {
-                    "type": "integer",
+                    "type": "number",
                     "example": 1637768672
                 },
                 "system": {
-                    "type": "integer",
+                    "type": "number",
                     "example": 1637768672
                 },
                 "total": {
-                    "type": "integer",
+                    "type": "number",
                     "example": 1637768672
                 },
                 "user": {
-                    "type": "integer",
+                    "type": "number",
                     "example": 1637768672
+                }
+            }
+        },
+        "entity.DirectoryData": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "test"
+                },
+                "size": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "type": {
+                    "type": "string",
+                    "example": "File"
+                }
+            }
+        },
+        "entity.DirectoryDataWrapper": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/entity.DirectoryData"
+                },
+                "key": {
+                    "type": "string",
+                    "example": "test/test2"
+                },
+                "leaf": {
+                    "type": "boolean"
                 }
             }
         },

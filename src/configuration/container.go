@@ -56,6 +56,7 @@ func BuildContainer() *dig.Container {
 func registerHttpHandlers(container *dig.Container) {
 	container.Provide(controller.NewUsersController)
 	container.Provide(controller.NewSystemController)
+	container.Provide(controller.NewStorageController)
 }
 
 func registerHandlers(container *dig.Container) {
@@ -72,6 +73,7 @@ func registerHandlers(container *dig.Container) {
 	container.Provide(queryhandler.NewCpuUsageHandler)
 	container.Provide(queryhandler.NewLoadAvgHandler)
 	container.Provide(queryhandler.NewUpTimeHandler)
+	container.Provide(queryhandler.NewReadDirectoryHandler)
 
 	container.Provide(func(usersHandler *queryhandler.UsersHandler) map[reflect.Type]mediator.Handler {
 		return make(map[reflect.Type]mediator.Handler)
@@ -112,5 +114,8 @@ func registerHandlers(container *dig.Container) {
 	})
 	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *queryhandler.UpTimeHandler) {
 		handlers[reflect.TypeOf(query.UpTimeQuery{})] = handler
+	})
+	container.Invoke(func(handlers map[reflect.Type]mediator.Handler, handler *queryhandler.ReadDirectoryHandler) {
+		handlers[reflect.TypeOf(query.ReadDirectoryQuery{})] = handler
 	})
 }

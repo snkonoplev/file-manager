@@ -10,22 +10,24 @@ import (
 )
 
 type Router struct {
-	engine           *gin.Engine
-	usersController  *controller.UsersController
-	systemController *controller.SystemController
-	a                *auth.Auth
-	viper            *viper.Viper
-	p                *proxy.Proxy
+	engine            *gin.Engine
+	usersController   *controller.UsersController
+	systemController  *controller.SystemController
+	storageController *controller.StorageController
+	a                 *auth.Auth
+	viper             *viper.Viper
+	p                 *proxy.Proxy
 }
 
-func NewRouter(engine *gin.Engine, usersController *controller.UsersController, auth *auth.Auth, viper *viper.Viper, p *proxy.Proxy, systemController *controller.SystemController) *Router {
+func NewRouter(engine *gin.Engine, usersController *controller.UsersController, auth *auth.Auth, viper *viper.Viper, p *proxy.Proxy, systemController *controller.SystemController, storageController *controller.StorageController) *Router {
 	return &Router{
-		engine:           engine,
-		usersController:  usersController,
-		systemController: systemController,
-		a:                auth,
-		viper:            viper,
-		p:                p,
+		engine:            engine,
+		usersController:   usersController,
+		systemController:  systemController,
+		storageController: storageController,
+		a:                 auth,
+		viper:             viper,
+		p:                 p,
 	}
 }
 
@@ -51,6 +53,11 @@ func (r *Router) MapHandlers() error {
 	{
 		api.POST("/login", a.LoginHandler)
 		api.GET("/refresh_token", a.RefreshHandler)
+
+		storage := api.Group("/storage").Use(a.MiddlewareFunc())
+		{
+			storage.GET("", r.storageController.GetDirectoryContent)
+		}
 
 		system := api.Group("/system").Use(a.MiddlewareFunc())
 		{
