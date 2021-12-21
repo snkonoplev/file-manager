@@ -30,14 +30,19 @@ func NewStorageController(mediator *mediator.Mediator, viper *viper.Viper) *Stor
 // @Accept  json
 // @Produce  json
 // @Security Bearer
-// @Param path query string false "Path"
-// @Router /api/storage [get]
+// @Param directory path string false "Directory"
+// @Router /api/storage/list-directories/{directory} [get]
 // @Success 200 {object} []entity.DirectoryDataWrapper
 // @Failure 401 {string} string
 // @Failure 403 {string} string
 // @Tags Storage
 func (h *StorageController) GetDirectoryContent(c *gin.Context) {
-	path := c.DefaultQuery("path", ".")
+
+	path := c.Param("directory")
+	if path == "/undefined" {
+		path = "."
+	}
+
 	result, err := h.mediator.Handle(c, query.ReadDirectoryQuery{Path: path})
 	if err != nil {
 		target := &mediator.HandlerError{}

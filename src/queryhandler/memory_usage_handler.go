@@ -3,7 +3,7 @@ package queryhandler
 import (
 	"context"
 
-	"github.com/mackerelio/go-osstat/memory"
+	"github.com/shirou/gopsutil/v3/mem"
 	"github.com/snkonoplev/file-manager/entity"
 )
 
@@ -15,16 +15,17 @@ func NewMemoryUsageHandler() *MemoryUsageHandler {
 }
 
 func (h *MemoryUsageHandler) Handle(context context.Context, q interface{}) (interface{}, error) {
-	memory, err := memory.Get()
+
+	v, err := mem.VirtualMemory()
 	if err != nil {
 		return nil, err
 	}
 
 	return entity.MemoryUsage{
-		Total:     memory.Total,
-		Used:      memory.Used,
-		Cached:    memory.Cached,
-		Free:      memory.Free,
-		Available: memory.Available,
+		Total:     v.Total,
+		Used:      v.Used,
+		Cached:    v.Cached,
+		Free:      v.Free,
+		Available: v.Available,
 	}, nil
 }

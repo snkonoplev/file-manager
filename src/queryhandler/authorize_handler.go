@@ -10,10 +10,10 @@ import (
 )
 
 type AuthorizeHandler struct {
-	repository *db.UsersRepository
+	repository db.IUsersRepository
 }
 
-func NewAuthorizeHandler(repository *db.UsersRepository) *AuthorizeHandler {
+func NewAuthorizeHandler(repository db.IUsersRepository) *AuthorizeHandler {
 	return &AuthorizeHandler{
 		repository: repository,
 	}

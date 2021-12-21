@@ -8,13 +8,13 @@ COPY src/go.mod .
 COPY src/go.sum .
 RUN go mod download
 COPY src/. .
+RUN CGO_ENABLED=0 go test ./...
 RUN go build -o service
 
 FROM base AS final
 WORKDIR /app
 COPY --from=build_base /app/service .
 COPY --from=build_base /app/appsettings.yml .
-#COPY --from=build_base /app/data/manager.db ./data/
 COPY --from=build_base /app/migrations/ ./migrations/
 
 VOLUME ["/data"]

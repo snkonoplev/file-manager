@@ -13,11 +13,24 @@ import (
 	"github.com/snkonoplev/file-manager/security"
 )
 
+//go:generate mockgen -destination ../commandhandler/mock_users_repository_test.go -package commandhandler_test github.com/snkonoplev/file-manager/db IUsersRepository
+//go:generate mockgen -destination ../queryhandler/mock_users_repository_test.go -package queryhandler_test github.com/snkonoplev/file-manager/db IUsersRepository
+type IUsersRepository interface {
+	CreateUser(context context.Context, user entity.User) (int64, error)
+	CheckUserExists(context context.Context, userName string) (bool, error)
+	ListUsers(context context.Context) ([]entity.User, error)
+	Authorize(context context.Context, userName string, password string) (entity.User, error)
+	UpdateUser(context context.Context, user entity.User) (entity.User, error)
+	DeleteUser(context context.Context, id int64) (int64, error)
+	GetUser(context context.Context, id int64) (entity.User, error)
+	ChangePassword(context context.Context, name string, password string) (int64, error)
+}
+
 type UsersRepository struct {
 	db *sqlx.DB
 }
 
-func NewUsersRepository(db *sqlx.DB) *UsersRepository {
+func NewUsersRepository(db *sqlx.DB) IUsersRepository {
 	return &UsersRepository{
 		db: db,
 	}

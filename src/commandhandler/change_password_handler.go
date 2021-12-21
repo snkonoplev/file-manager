@@ -13,10 +13,10 @@ import (
 )
 
 type ChangePasswordHandler struct {
-	repository *db.UsersRepository
+	repository db.IUsersRepository
 }
 
-func NewChangePasswordHandler(repository *db.UsersRepository) *ChangePasswordHandler {
+func NewChangePasswordHandler(repository db.IUsersRepository) *ChangePasswordHandler {
 	return &ChangePasswordHandler{
 		repository: repository,
 	}

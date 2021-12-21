@@ -49,21 +49,18 @@ definitions:
     type: object
   entity.CpuUsage:
     properties:
-      count:
-        example: 1637768672
+      countLogical:
+        example: 1
         type: integer
-      idle:
-        example: 1637768672
-        type: number
-      system:
-        example: 1637768672
-        type: number
-      total:
-        example: 1637768672
-        type: number
-      user:
-        example: 1637768672
-        type: number
+      countPhysical:
+        example: 1
+        type: integer
+      percent:
+        example:
+        - 0.001
+        items:
+          type: number
+        type: array
     type: object
   entity.DirectoryData:
     properties:
@@ -225,38 +222,6 @@ paths:
       summary: Refresh access token
       tags:
       - Auth
-  /api/storage:
-    get:
-      consumes:
-      - application/json
-      operationId: GetDirectoryContent
-      parameters:
-      - description: Path
-        in: query
-        name: path
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/entity.DirectoryDataWrapper'
-            type: array
-        "401":
-          description: Unauthorized
-          schema:
-            type: string
-        "403":
-          description: Forbidden
-          schema:
-            type: string
-      security:
-      - Bearer: []
-      summary: Get directory content
-      tags:
-      - Storage
   /api/storage/download/{file}:
     get:
       consumes:
@@ -286,6 +251,38 @@ paths:
       security:
       - Bearer: []
       summary: Download file from storage
+      tags:
+      - Storage
+  /api/storage/list-directories/{directory}:
+    get:
+      consumes:
+      - application/json
+      operationId: GetDirectoryContent
+      parameters:
+      - description: Directory
+        in: path
+        name: directory
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.DirectoryDataWrapper'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get directory content
       tags:
       - Storage
   /api/system/cpu-usage:

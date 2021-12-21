@@ -103,57 +103,6 @@ var doc = `{
                 }
             }
         },
-        "/api/storage": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Storage"
-                ],
-                "summary": "Get directory content",
-                "operationId": "GetDirectoryContent",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Path",
-                        "name": "path",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/entity.DirectoryDataWrapper"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/api/storage/download/{file}": {
             "get": {
                 "security": [
@@ -196,6 +145,57 @@ var doc = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/storage/list-directories/{directory}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Storage"
+                ],
+                "summary": "Get directory content",
+                "operationId": "GetDirectoryContent",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Directory",
+                        "name": "directory",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.DirectoryDataWrapper"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "type": "string"
                         }
@@ -725,25 +725,22 @@ var doc = `{
         "entity.CpuUsage": {
             "type": "object",
             "properties": {
-                "count": {
+                "countLogical": {
                     "type": "integer",
-                    "example": 1637768672
+                    "example": 1
                 },
-                "idle": {
-                    "type": "number",
-                    "example": 1637768672
+                "countPhysical": {
+                    "type": "integer",
+                    "example": 1
                 },
-                "system": {
-                    "type": "number",
-                    "example": 1637768672
-                },
-                "total": {
-                    "type": "number",
-                    "example": 1637768672
-                },
-                "user": {
-                    "type": "number",
-                    "example": 1637768672
+                "percent": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    },
+                    "example": [
+                        0.001
+                    ]
                 }
             }
         },

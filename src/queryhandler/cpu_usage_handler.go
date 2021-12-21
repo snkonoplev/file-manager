@@ -4,7 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/mackerelio/go-osstat/cpu"
+	"github.com/shirou/gopsutil/v3/cpu"
+
 	"github.com/snkonoplev/file-manager/entity"
 )
 
@@ -16,22 +17,24 @@ func NewCpuUsageHandler() *CpuUsageHandler {
 }
 
 func (h *CpuUsageHandler) Handle(context context.Context, q interface{}) (interface{}, error) {
-	before, err := cpu.Get()
+	countL, err := cpu.Counts(true)
 	if err != nil {
 		return nil, err
 	}
 
-	time.Sleep(time.Duration(1) * time.Second)
-	after, err := cpu.Get()
+	countP, err := cpu.Counts(false)
+	if err != nil {
+		return nil, err
+	}
+
+	percent, err := cpu.PercentWithContext(context, time.Second, false)
 	if err != nil {
 		return nil, err
 	}
 
 	return entity.CpuUsage{
-		Count:  after.CPUCount,
-		Total:  float64(after.Total - before.Total),
-		User:   float64(after.User - before.User),
-		System: float64(after.System - before.System),
-		Idle:   float64(after.Idle - before.Idle),
+		Percent:       percent,
+		CountLogical:  countL,
+		CountPhysical: countP,
 	}, nil
 }

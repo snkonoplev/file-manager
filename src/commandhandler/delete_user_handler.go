@@ -11,10 +11,10 @@ import (
 )
 
 type DeleteUserHandler struct {
-	repository *db.UsersRepository
+	repository db.IUsersRepository
 }
 
-func NewDeleteUserHandler(repository *db.UsersRepository) *DeleteUserHandler {
+func NewDeleteUserHandler(repository db.IUsersRepository) *DeleteUserHandler {
 	return &DeleteUserHandler{
 		repository: repository,
 	}
