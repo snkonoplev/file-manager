@@ -222,6 +222,68 @@ paths:
       summary: Refresh access token
       tags:
       - Auth
+  /api/storage/create-directory/{dir}:
+    put:
+      consumes:
+      - application/json
+      operationId: MkDir
+      parameters:
+      - description: Directory
+        in: path
+        name: dir
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Create directory in storage
+      tags:
+      - Storage
+  /api/storage/delete/{file}:
+    delete:
+      consumes:
+      - application/json
+      operationId: DeleteFile
+      parameters:
+      - description: File
+        in: path
+        name: file
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Remove file from storage
+      tags:
+      - Storage
   /api/storage/download/{file}:
     get:
       consumes:
@@ -262,6 +324,7 @@ paths:
       - description: Directory
         in: path
         name: directory
+        required: true
         type: string
       produces:
       - application/json
@@ -370,6 +433,31 @@ paths:
       summary: Get Get up time
       tags:
       - System
+  /api/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: UploadFile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Upload File
+      tags:
+      - Storage
   /api/users:
     get:
       consumes:
