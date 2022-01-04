@@ -1,0 +1,20 @@
+ADMIN_PASSWORD: "123"
+DB:
+  FILE_PATH: "./data/manager.db"
+JWT:
+  SECRET: "123"
+SWAGGER:
+  ENABLED: true
+  SCHEMA: "http"
+  HOST: "localhost:5000"
+  BASE_PATH: ""
+GIN:
+  MODE: "debug"
+PROXY:
+  BASE_URL: "http://192.168.1.68:8090/" #"http://host.docker.internal:9091/"
+  BASIC_AUTH:
+    ENABLED: false
+    USER_NAME: "busy-flamingo"
+    PASSWORD: "123"
+STORAGE:
+  PATH: "./data/"
