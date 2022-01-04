@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "users_name" on users (name ASC)

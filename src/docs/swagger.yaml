@@ -1,0 +1,661 @@
+definitions:
+  command.ChangePasswordCommand:
+    properties:
+      name:
+        example: adam
+        type: string
+      newPassword:
+        example: "123"
+        type: string
+      previousPassword:
+        example: "123"
+        type: string
+    required:
+    - name
+    - newPassword
+    - previousPassword
+    type: object
+  command.CreateUserCommand:
+    properties:
+      isActive:
+        example: true
+        type: boolean
+      isAdmin:
+        example: false
+        type: boolean
+      name:
+        example: adam
+        type: string
+      password:
+        example: "123"
+        type: string
+    required:
+    - name
+    - password
+    type: object
+  command.UpdateUserCommand:
+    properties:
+      id:
+        example: 1
+        type: integer
+      isActive:
+        example: false
+        type: boolean
+      isAdmin:
+        example: false
+        type: boolean
+    required:
+    - id
+    type: object
+  entity.CpuUsage:
+    properties:
+      countLogical:
+        example: 1
+        type: integer
+      countPhysical:
+        example: 1
+        type: integer
+      percent:
+        example:
+        - 0.001
+        items:
+          type: number
+        type: array
+    type: object
+  entity.DirectoryData:
+    properties:
+      name:
+        example: test
+        type: string
+      size:
+        example: 10
+        type: integer
+      type:
+        example: File
+        type: string
+    type: object
+  entity.DirectoryDataWrapper:
+    properties:
+      data:
+        $ref: '#/definitions/entity.DirectoryData'
+      key:
+        example: test/test2
+        type: string
+      leaf:
+        type: boolean
+    type: object
+  entity.DiskUsage:
+    properties:
+      available:
+        example: 1637768672
+        type: integer
+      size:
+        example: 1637768672
+        type: integer
+      usage:
+        example: 1637768672
+        type: number
+      used:
+        example: 1637768672
+        type: integer
+    type: object
+  entity.LoadAvg:
+    properties:
+      loadavg1:
+        example: 1637768672
+        type: number
+      loadavg5:
+        example: 1637768672
+        type: number
+      loadavg15:
+        example: 1637768672
+        type: number
+    type: object
+  entity.MemoryUsage:
+    properties:
+      available:
+        example: 1637768672
+        type: integer
+      cached:
+        example: 1637768672
+        type: integer
+      free:
+        example: 1637768672
+        type: integer
+      total:
+        example: 1637768672
+        type: integer
+      used:
+        example: 1637768672
+        type: integer
+    type: object
+  entity.UpTime:
+    properties:
+      upTime:
+        example: 1637768672
+        type: integer
+    type: object
+  entity.User:
+    properties:
+      created:
+        example: 1637768672
+        type: integer
+      id:
+        example: 1
+        type: integer
+      isActive:
+        example: true
+        type: boolean
+      isAdmin:
+        example: true
+        type: boolean
+      lastLogin:
+        example: 1637768672
+        type: integer
+      name:
+        example: Adam
+        type: string
+    type: object
+  query.UserAuthorizeQuery:
+    properties:
+      password:
+        example: "123"
+        type: string
+      username:
+        example: admin
+        type: string
+    required:
+    - password
+    - username
+    type: object
+info:
+  contact: {}
+paths:
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      operationId: Login
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/query.UserAuthorizeQuery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Get access token
+      tags:
+      - Auth
+  /api/refresh_token:
+    get:
+      consumes:
+      - application/json
+      operationId: RefreshToken
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Refresh access token
+      tags:
+      - Auth
+  /api/storage/create-directory/{dir}:
+    put:
+      consumes:
+      - application/json
+      operationId: MkDir
+      parameters:
+      - description: Directory
+        in: path
+        name: dir
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Create directory in storage
+      tags:
+      - Storage
+  /api/storage/delete/{file}:
+    delete:
+      consumes:
+      - application/json
+      operationId: DeleteFile
+      parameters:
+      - description: File
+        in: path
+        name: file
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Remove file from storage
+      tags:
+      - Storage
+  /api/storage/download/{file}:
+    get:
+      consumes:
+      - application/json
+      operationId: DownloadFile
+      parameters:
+      - description: File
+        in: path
+        name: file
+        required: true
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Download file from storage
+      tags:
+      - Storage
+  /api/storage/list-directories/{directory}:
+    get:
+      consumes:
+      - application/json
+      operationId: GetDirectoryContent
+      parameters:
+      - description: Directory
+        in: path
+        name: directory
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.DirectoryDataWrapper'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get directory content
+      tags:
+      - Storage
+  /api/system/cpu-usage:
+    get:
+      consumes:
+      - application/json
+      operationId: GetCpuUsage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.CpuUsage'
+      security:
+      - Bearer: []
+      summary: Get CPU usage
+      tags:
+      - System
+  /api/system/disk-usage:
+    get:
+      consumes:
+      - application/json
+      operationId: GetDiskUsage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.DiskUsage'
+      security:
+      - Bearer: []
+      summary: Get disk usage
+      tags:
+      - System
+  /api/system/load-avg:
+    get:
+      consumes:
+      - application/json
+      operationId: GetLoadAvg
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.LoadAvg'
+      security:
+      - Bearer: []
+      summary: Get Get load avg
+      tags:
+      - System
+  /api/system/memory-usage:
+    get:
+      consumes:
+      - application/json
+      operationId: GetMemoryUsage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.MemoryUsage'
+      security:
+      - Bearer: []
+      summary: Get memory usage
+      tags:
+      - System
+  /api/system/up-time:
+    get:
+      consumes:
+      - application/json
+      operationId: GetUpTime
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UpTime'
+      security:
+      - Bearer: []
+      summary: Get Get up time
+      tags:
+      - System
+  /api/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: UploadFile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Upload File
+      tags:
+      - Storage
+  /api/users:
+    get:
+      consumes:
+      - application/json
+      operationId: GetUsers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.User'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get list of all users
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      operationId: CreteUser
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/command.CreateUserCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Crete new user
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      operationId: UpdateUser
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/command.UpdateUserCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Update user
+      tags:
+      - Users
+  /api/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: DeleteUser
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Delete user
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      operationId: GetUser
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get user by id
+      tags:
+      - Users
+  /api/users/change-password:
+    put:
+      consumes:
+      - application/json
+      operationId: ChangePassword
+      parameters:
+      - description: Password
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/command.ChangePasswordCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Change password
+      tags:
+      - Users
+  /api/users/current:
+    get:
+      consumes:
+      - application/json
+      operationId: CurrentUser
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get current
+      tags:
+      - Users
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
