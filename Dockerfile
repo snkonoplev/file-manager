@@ -5,7 +5,7 @@ RUN apk add glibc-2.34-r0.apk
 WORKDIR /app
 EXPOSE 8080
 
-FROM golang:1.17 AS build_base
+FROM golang:1.18 AS build_base
 WORKDIR /app
 COPY src/go.mod .
 COPY src/go.sum .
