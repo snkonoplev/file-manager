@@ -15,7 +15,7 @@ func RunMigrateScripts(db *sql.DB, filepath string) error {
 		return fmt.Errorf("creating sqlite3 db driver failed %w", err)
 	}
 
-	f, err := (&file.File{}).Open("file://migrations")
+	f, err := (&file.File{}).Open("file://../migrations")
 	if err != nil {
 		return fmt.Errorf("can't get migration files %w", err)
 	}
