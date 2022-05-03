@@ -1,10 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"os"
-
-	"github.com/snkonoplev/list"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -23,15 +20,6 @@ func init() {
 // @name Authorization
 func main() {
 	logrus.Info("starting application")
-
-	l := list.List[string]{"123", "333", "444"}
-	fmt.Println(l.FirstOrDefault(func(a string) bool {
-		if a == "123" {
-			return true
-		}
-		return false
-	}))
-
 	container := configuration.BuildContainer()
 	err := container.Invoke(func(b *bootstrap.Bootstrap, engine *gin.Engine) error {
 		err := b.Run()
