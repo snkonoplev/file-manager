@@ -1,6 +1,6 @@
 ADMIN_PASSWORD: "123"
 DB:
-  FILE_PATH: "../data/manager.db"
+  FILE_PATH: "./data/manager.db"
 JWT:
   SECRET: "123"
 SWAGGER:
@@ -17,4 +17,4 @@ PROXY:
     USER_NAME: "busy-flamingo"
     PASSWORD: "123"
 STORAGE:
-  PATH: "../data/"
+  PATH: "./data/"

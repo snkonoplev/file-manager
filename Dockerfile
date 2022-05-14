@@ -7,10 +7,10 @@ EXPOSE 8080
 
 FROM golang:1.18 AS build_base
 WORKDIR /app
-COPY src/go.mod .
-COPY src/go.sum .
+COPY go.mod .
+COPY go.sum .
 RUN go mod download
-COPY src/. .
+COPY . .
 RUN CGO_ENABLED=0 go test ./...
 RUN go build -o service
 
